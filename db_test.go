@@ -40,5 +40,20 @@ func TestData_FillModels(t *testing.T) {
 }
 
 func TestData_LoadAssociations(t *testing.T) {
+	var data Data
+	data.Init()
+	defer data.Close()
 
+	var mov Movie
+	expectedShowNum := 5
+	data.FillModelById(&mov, 5)
+	err := data.LoadAssociations(&mov, "Shows")
+
+	if err != nil {
+		t.Error("Could not load shows")
+	} else if mov.Shows == nil {
+		t.Error("Show data not loaded successfully")
+	} else if len(mov.Shows) != expectedShowNum {
+		t.Error("Expected ", expectedShowNum, "got", len(mov.Shows))
+	}
 }
