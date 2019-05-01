@@ -84,26 +84,7 @@ func (handle *DBHandler) FillModels(resources interface{}) error {
 	return nil
 }
 
-func (handle *DBHandler) QueryModel(resources interface{}, query *Query) error {
-	t := reflect.Indirect(reflect.ValueOf(resources))
-
-	switch t.Kind() {
-	case reflect.Struct, reflect.Slice:
-		keys := make([]interface{}, len(query.keys))
-		for i, key := range query.keys {
-			keys[i] = key
-		}
-		if err := handle.db.Where(query.statement, keys...).Find(resources).Error; err != nil {
-			return err
-		}
-	default:
-		return errors.New("Resource must be a struct!")
-	}
-
-	return nil
-}
-
-func (handle *DBHandler) QueryModelRaw(resources interface{}, statement string, args... interface{}) error {
+func (handle *DBHandler) QueryModel(resources interface{}, statement string, args... interface{}) error {
 	t := reflect.Indirect(reflect.ValueOf(resources))
 
 	switch t.Kind() {
