@@ -115,7 +115,7 @@ func TestData_QueryModel(t *testing.T) {
 
 	var mov Movie
 	expectedId := uint(5)
-	query := Query{"name = ?", "Rogue One: A Star Wars Story"}
+	query := Query{"title = ?", "Rogue One: A Star Wars Story"}
 
 	if err := data.QueryModel(&mov, &query); err != nil{
 		t.Error("Could not query, got", err)

@@ -86,6 +86,17 @@ func (handle *Data) FillModels(resources interface{}) error {
 }
 
 func (handle *Data) QueryModel(resources interface{}, query *Query) error {
+	t := reflect.Indirect(reflect.ValueOf(resources))
+
+	switch t.Kind() {
+	case reflect.Struct:
+		if err := handle.db.Where(query.statement, query.key).Find(resources).Error; err != nil {
+			return err
+		}
+	default:
+		return errors.New("Resource must be a struct!")
+	}
+
 	return nil
 }
 
