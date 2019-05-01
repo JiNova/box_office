@@ -45,7 +45,6 @@ func (handle *Data) CountEntries(resources interface{}) (count int, err error) {
 		handle.db.Model(resources).Count(&count)
 	default:
 		err = errors.New("Resources must be a struct!")
-		return
 	}
 
 	return
