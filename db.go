@@ -35,6 +35,14 @@ func (handle *Data) Close() {
 	_ = handle.db.Close()
 }
 
+func (handle *Data) LoadModels(resources interface{}) error {
+	return nil
+}
+
+func (handle *Data) LoadAssociations(resources interface{}, assocations ...string) error {
+	return nil
+}
+
 func (handle *Data) GenPlan(plan *map[string]string) {
 	var movies []Movie
 	var movCount int
