@@ -95,3 +95,15 @@ func TestData_LoadAssociationsMulti(t *testing.T) {
 		}
 	}
 }
+
+func TestData_CountEntries(t *testing.T) {
+	var data Data
+	data.Init()
+	defer data.Close()
+
+	if count, err := data.CountEntries(&[]Day{}); count != 7 {
+		t.Error("Expected 7 days, got", count)
+	} else if err != nil {
+		t.Error("Could not count days, got", err)
+	}
+}
