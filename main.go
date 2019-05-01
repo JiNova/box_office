@@ -9,7 +9,7 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 )
 
-func sell (data *Data) {
+func sell (data *DBHandler) {
 
 	var maxLen int
 
@@ -103,7 +103,7 @@ func sell (data *Data) {
 	}
 }
 
-func refund(data *Data) {
+func refund(data *DBHandler) {
 
 	fmt.Println("Please provide the serial number(s), separating them with a space if there you are " +
 					"trying to refund more than one ticket at a time")
@@ -125,7 +125,7 @@ func refund(data *Data) {
 	fmt.Println("All your eligible tickets have been refunded!")
 }
 
-func report(data *Data) {
+func report(data *DBHandler) {
 
 	fmt.Println("Create a report for \n (1) A specific showtime \n (2) All shows on a specific date")
 	choice, err := choose("report")
@@ -201,7 +201,7 @@ func report(data *Data) {
 
 func main() {
 
-	var data Data
+	var data DBHandler
 	data.Init()
 
 	defer data.Close()

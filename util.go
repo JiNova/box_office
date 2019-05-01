@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-func (handle *Data) serial() (code string) {
+func (handle *DBHandler) serial() (code string) {
 
 	hasher := sha256.New()
 	hasher.Write([]byte(strconv.Itoa(handle.ran.Intn(500))+time.Now().String()))
@@ -39,7 +39,7 @@ func choose(prompt string) (choice int, err error) {
 	return
 }
 
-func genDate(data *Data, shows *[]Show) (showt map[time.Time]Show) {
+func genDate(data *DBHandler, shows *[]Show) (showt map[time.Time]Show) {
 
 	today := time.Now()
 	todayId := data.DayId(today.Weekday().String())
@@ -71,7 +71,7 @@ func genDate(data *Data, shows *[]Show) (showt map[time.Time]Show) {
 	return
 }
 
-func pricing(data *Data, tier int, day *Day, time *Time) (price float64) {
+func pricing(data *DBHandler, tier int, day *Day, time *Time) (price float64) {
 
 	var dis float64
 	price = data.Pricing(tier)

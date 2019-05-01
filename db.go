@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	"math/rand"
 	"reflect"
 	"time"
@@ -12,7 +11,7 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 )
 
-type Data struct {
+type DBHandler struct {
 	db *gorm.DB
 	ran *rand.Rand
 }
@@ -22,7 +21,7 @@ type Query struct {
 	key string
 }
 
-func (handle *Data) Init() {
+func (handle *DBHandler) Init() {
 	if handle.db != nil {
 		panic("already connected")
 	}
@@ -38,11 +37,11 @@ func (handle *Data) Init() {
 	handle.ran = rand.New(s1)
 }
 
-func (handle *Data) Close() {
+func (handle *DBHandler) Close() {
 	_ = handle.db.Close()
 }
 
-func (handle *Data) CountEntries(resources interface{}) (count int, err error) {
+func (handle *DBHandler) CountEntries(resources interface{}) (count int, err error) {
 	t := reflect.Indirect(reflect.ValueOf(resources))
 
 	switch t.Kind() {
@@ -55,7 +54,7 @@ func (handle *Data) CountEntries(resources interface{}) (count int, err error) {
 	return
 }
 
-func (handle *Data) FillModelById(resources interface{}, id int) error {
+func (handle *DBHandler) FillModelById(resources interface{}, id int) error {
 	t := reflect.Indirect(reflect.ValueOf(resources))
 
 	switch t.Kind() {
@@ -70,7 +69,7 @@ func (handle *Data) FillModelById(resources interface{}, id int) error {
 	return nil
 }
 
-func (handle *Data) FillModels(resources interface{}) error {
+func (handle *DBHandler) FillModels(resources interface{}) error {
 	t := reflect.Indirect(reflect.ValueOf(resources))
 
 	switch t.Kind() {
@@ -85,7 +84,7 @@ func (handle *Data) FillModels(resources interface{}) error {
 	return nil
 }
 
-func (handle *Data) QueryModel(resources interface{}, query *Query) error {
+func (handle *DBHandler) QueryModel(resources interface{}, query *Query) error {
 	t := reflect.Indirect(reflect.ValueOf(resources))
 
 	switch t.Kind() {
@@ -100,7 +99,7 @@ func (handle *Data) QueryModel(resources interface{}, query *Query) error {
 	return nil
 }
 
-func (handle *Data) LoadAssociations(resources interface{}, assocations ...string) error {
+func (handle *DBHandler) LoadAssociations(resources interface{}, assocations ...string) error {
 	t := reflect.Indirect(reflect.ValueOf(resources))
 
 	switch t.Kind() {
@@ -139,29 +138,7 @@ func (handle *Data) LoadAssociations(resources interface{}, assocations ...strin
 	return nil
 }
 
-func (handle *Data) GenPlan(plan *map[string]string) {
-	var movies []Movie
-	var movCount int
-
-	handle.db.Find(&movies).Count(&movCount)
-
-	// var showCnt int
-	shows := make([][]Show, movCount)
-
-	for i, movie := range movies {
-		handle.db.Where("movie_id = ?", movie.MovieID).Find(&shows[i])
-
-		for _, show := range shows[i] {
-			var day Day
-			var time Time
-			handle.db.Model(&show).Related(&day)
-			handle.db.Model(&show).Related(&time)
-			(*plan)[fmt.Sprint(show.Screen)+day.Name+time.Desc] = movie.Title
-		}
-	}
-}
-
-func (handle *Data) GetAval(date *time.Time, show *Show) (avail []int) {
+func (handle *DBHandler) GetAval(date *time.Time, show *Show) (avail []int) {
 	var all int
 	var tickets []Ticket
 
@@ -183,7 +160,7 @@ func (handle *Data) GetAval(date *time.Time, show *Show) (avail []int) {
 	return
 }
 
-func (handle *Data) CreaTic(date *time.Time, show *Show, amount int, tier int) (serials []string){
+func (handle *DBHandler) CreaTic(date *time.Time, show *Show, amount int, tier int) (serials []string){
 
 	tickets := make([]Ticket, amount)
 
@@ -200,14 +177,14 @@ func (handle *Data) CreaTic(date *time.Time, show *Show, amount int, tier int) (
 	return
 }
 
-func (handle *Data) DayId(day string) int {
+func (handle *DBHandler) DayId(day string) int {
 
 	var d Day
 	handle.db.Where("name = ?", day).Find(&d)
 	return int(d.DayID)
 }
 
-func (handle *Data) GetTic(serials []string) (dates []time.Time) {
+func (handle *DBHandler) GetTic(serials []string) (dates []time.Time) {
 
 	for _, serial := range serials {
 		var t Ticket
@@ -218,7 +195,7 @@ func (handle *Data) GetTic(serials []string) (dates []time.Time) {
 	return
 }
 
-func (handle *Data) GetTicD(date *time.Time) int {
+func (handle *DBHandler) GetTicD(date *time.Time) int {
 
 	var t1, t2 int
 	loc, _ := time.LoadLocation("America/Chicago")
@@ -232,7 +209,7 @@ func (handle *Data) GetTicD(date *time.Time) int {
 	return t1 + t2
 }
 
-func (handle *Data) GetTiD2(date *time.Time, showID uint) (tickets int, vacant int) {
+func (handle *DBHandler) GetTiD2(date *time.Time, showID uint) (tickets int, vacant int) {
 
 	handle.db.Model(&Ticket{}).Where("date = ? AND show_id = ?", date, showID).Count(&tickets)
 	vacant = 40 - tickets
@@ -240,7 +217,7 @@ func (handle *Data) GetTiD2(date *time.Time, showID uint) (tickets int, vacant i
 	return
 }
 
-func (handle *Data) TimDatS (weekday string, hour int) (shows []Show) {
+func (handle *DBHandler) TimDatS (weekday string, hour int) (shows []Show) {
 
 	var d Day
 	var t Time
@@ -255,19 +232,19 @@ func (handle *Data) TimDatS (weekday string, hour int) (shows []Show) {
 	return
 }
 
-func (handle *Data) DelTic(serials []string) {
+func (handle *DBHandler) DelTic(serials []string) {
 
 	for _, serial := range serials {
 		handle.db.Where("serial = ?", serial).Delete(&Ticket{})
 	}
 }
 
-func (handle *Data) Movies() (movies []Movie) {
+func (handle *DBHandler) Movies() (movies []Movie) {
 	handle.db.Find(&movies)
 	return
 }
 
-func (handle *Data) Shows(movie *Movie) (shows []Show) {
+func (handle *DBHandler) Shows(movie *Movie) (shows []Show) {
 
 	handle.db.Where("movie_id = ?", movie.MovieID).Find(&shows)
 
@@ -285,7 +262,7 @@ func (handle *Data) Shows(movie *Movie) (shows []Show) {
 	return
 }
 
-func (handle *Data) ShowMov(shows *[]Show) (movies []string) {
+func (handle *DBHandler) ShowMov(shows *[]Show) (movies []string) {
 
 	movies = make([]string, len(*shows))
 
@@ -298,7 +275,7 @@ func (handle *Data) ShowMov(shows *[]Show) (movies []string) {
 	return
 }
 
-func (handle *Data) Plays(shows *[]Show) (day2h map[string]int) {
+func (handle *DBHandler) Plays(shows *[]Show) (day2h map[string]int) {
 
 	var d Day
 	var t Time
@@ -315,7 +292,7 @@ func (handle *Data) Plays(shows *[]Show) (day2h map[string]int) {
 }
 
 
-func (handle *Data) Pricing(tier int) float64 {
+func (handle *DBHandler) Pricing(tier int) float64 {
 	var t Tier
 	handle.db.Where("tier_id = ?", tier).Find(&t)
 	return t.Price

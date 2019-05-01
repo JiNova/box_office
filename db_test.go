@@ -5,7 +5,7 @@ import (
 )
 
 func TestData_FillModelById(t *testing.T) {
-	var data Data
+	var data DBHandler
 	data.Init()
 	defer data.Close()
 
@@ -23,7 +23,7 @@ func TestData_FillModelById(t *testing.T) {
 }
 
 func TestData_FillModels(t *testing.T) {
-	var data Data
+	var data DBHandler
 	data.Init()
 	defer data.Close()
 
@@ -40,7 +40,7 @@ func TestData_FillModels(t *testing.T) {
 }
 
 func TestData_LoadAssociationsSingle(t *testing.T) {
-	var data Data
+	var data DBHandler
 	data.Init()
 	defer data.Close()
 
@@ -67,7 +67,7 @@ func TestData_LoadAssociationsSingle(t *testing.T) {
 }
 
 func TestData_LoadAssociationsMulti(t *testing.T) {
-	var data Data
+	var data DBHandler
 	data.Init()
 	defer data.Close()
 
@@ -97,7 +97,7 @@ func TestData_LoadAssociationsMulti(t *testing.T) {
 }
 
 func TestData_CountEntries(t *testing.T) {
-	var data Data
+	var data DBHandler
 	data.Init()
 	defer data.Close()
 
@@ -109,7 +109,7 @@ func TestData_CountEntries(t *testing.T) {
 }
 
 func TestData_QueryModel(t *testing.T) {
-	var data Data
+	var data DBHandler
 	data.Init()
 	defer data.Close()
 
