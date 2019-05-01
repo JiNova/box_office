@@ -21,7 +21,7 @@ func TestDataBroker_GetAvailableTickets(t *testing.T) {
 		sum += amount
 	}
 
-	if sum != 40 {
+	if sum != 35 {
 		t.Error("Expected 40, got", sum)
 	}
 }
