@@ -15,7 +15,7 @@ func TestData_FillModelById(t *testing.T) {
 	expectedLen := uint(133)
 
 	if err != nil {
-		t.Error("Movie could not be loaded")
+		t.Error("Movie could not be loaded", err)
 	} else if mov.Title != expectedTitle || mov.Length != expectedLen {
 		t.Error("Expected", expectedTitle, "and", expectedLen,
 				"got", mov.Title, "and", mov.Length)
