@@ -88,7 +88,7 @@ func (handle *DBHandler) QueryModel(resources interface{}, query *Query) error {
 	t := reflect.Indirect(reflect.ValueOf(resources))
 
 	switch t.Kind() {
-	case reflect.Struct:
+	case reflect.Struct, reflect.Slice:
 		if err := handle.db.Where(query.statement, query.key).Find(resources).Error; err != nil {
 			return err
 		}

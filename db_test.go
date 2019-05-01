@@ -1,6 +1,7 @@
 package main
 
 import (
+	"strconv"
 	"testing"
 )
 
@@ -108,7 +109,7 @@ func TestData_CountEntries(t *testing.T) {
 	}
 }
 
-func TestData_QueryModel(t *testing.T) {
+func TestData_QueryModelSingle(t *testing.T) {
 	var data DBHandler
 	data.Init()
 	defer data.Close()
@@ -121,5 +122,25 @@ func TestData_QueryModel(t *testing.T) {
 		t.Error("Could not query, got", err)
 	} else if expectedId != mov.MovieID {
 		t.Error("Expected movie_id", expectedId, "got", mov.MovieID)
+	}
+}
+
+func TestData_QueryModelMulti(t *testing.T) {
+	var data DBHandler
+	data.Init()
+	defer data.Close()
+
+	var shows []Show
+	expectedId := uint(5)
+	query := Query{"movie_id = ?", strconv.Itoa(int(expectedId))}
+
+	if err := data.QueryModel(&shows, &query); err != nil{
+		t.Error("Could not query, got", err)
+	}
+
+	for _,show := range shows {
+		if expectedId != show.MovieID {
+			t.Error("Expected movie_id", expectedId, "got", show.MovieID)
+		}
 	}
 }
