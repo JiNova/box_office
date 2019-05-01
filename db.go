@@ -68,6 +68,41 @@ func (handle *Data) FillModels(resources interface{}) error {
 }
 
 func (handle *Data) LoadAssociations(resources interface{}, assocations ...string) error {
+	t := reflect.Indirect(reflect.ValueOf(resources))
+
+	switch t.Kind() {
+	case reflect.Slice:
+		if err := handle.db.Find(resources).Error; err != nil {
+			return err
+		}
+
+		for _, association := range assocations {
+			for i := 0; i < t.Len(); i++ {
+				model := handle.db.Model(t.Index(i).Addr().Interface())
+				field := t.Index(i).FieldByName(association).Addr().Interface()
+
+				if err := model.Association(association).Find(field).Error; err != nil {
+					panic(err)
+				}
+			}
+		}
+	case reflect.Struct:
+		if err := handle.db.Find(resources).Error; err != nil {
+			return err
+		}
+
+		for _, association := range assocations {
+			model := handle.db.Model(t.Addr().Interface())
+			field := t.FieldByName(association).Addr().Interface()
+
+			if err := model.Association(association).Find(field).Error; err != nil {
+				panic(err)
+			}
+		}
+	default:
+		return errors.New("Resources must be a slice or struct!")
+	}
+
 	return nil
 }
 
