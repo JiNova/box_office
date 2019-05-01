@@ -40,3 +40,7 @@ func (broker *DataBroker) GetAvailableTickets(date *time.Time, show *Show) (avai
 
 	return
 }
+
+func (broker *DataBroker) GetDayIdByName(day string) int {
+	return 0
+}

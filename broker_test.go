@@ -25,3 +25,13 @@ func TestDataBroker_GetAvailableTickets(t *testing.T) {
 		t.Error("Expected 40, got", sum)
 	}
 }
+
+func TestDataBroker_GetDayIdByName(t *testing.T) {
+	var broker DataBroker
+	broker.Init()
+	defer broker.Close()
+
+	if dayId := broker.GetDayIdByName("Friday"); dayId != 5 {
+		t.Error("Expected id 5, got", dayId)
+	}
+}
