@@ -48,5 +48,12 @@ func (broker *DataBroker) GetDayIdByName(dayName string) int {
 }
 
 func (broker *DataBroker) GetShowsByPlaytime(weekday string, hour int) (shows []Show) {
+	var day Day
+	var time Time
+
+	broker.dbhandler.QueryModel(&day, "name = ?", weekday)
+	broker.dbhandler.QueryModel(&time, "hour = ?", hour)
+	broker.dbhandler.QueryModel(&shows, "day_id = ? AND time_id = ?", day.DayID, time.TimeID)
+
 	return
 }
