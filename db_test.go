@@ -101,7 +101,7 @@ func TestData_CountEntries(t *testing.T) {
 	data.Init()
 	defer data.Close()
 
-	if count, err := data.CountEntries(&[]Day{}); count != 7 {
+	if count, err := data.CountEntries(&Day{}); count != 7 {
 		t.Error("Expected 7 days, got", count)
 	} else if err != nil {
 		t.Error("Could not count days, got", err)

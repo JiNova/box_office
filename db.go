@@ -37,8 +37,18 @@ func (handle *Data) Close() {
 	_ = handle.db.Close()
 }
 
-func (handle *Data) CountEntries(resources interface{}) (int, error) {
-	return 0, nil
+func (handle *Data) CountEntries(resources interface{}) (count int, err error) {
+	t := reflect.Indirect(reflect.ValueOf(resources))
+
+	switch t.Kind() {
+	case reflect.Struct:
+		handle.db.Model(resources).Count(&count)
+	default:
+		err = errors.New("Resources must be a struct!")
+		return
+	}
+
+	return
 }
 
 func (handle *Data) FillModelById(resources interface{}, id int) error {
