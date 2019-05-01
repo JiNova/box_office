@@ -41,6 +41,8 @@ func (broker *DataBroker) GetAvailableTickets(date *time.Time, show *Show) (avai
 	return
 }
 
-func (broker *DataBroker) GetDayIdByName(day string) int {
-	return 0
+func (broker *DataBroker) GetDayIdByName(dayName string) int {
+	var day Day
+	broker.dbhandler.QueryModel(&day, "name = ?", dayName)
+	return int(day.DayID)
 }
