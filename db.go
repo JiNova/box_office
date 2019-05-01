@@ -1,11 +1,8 @@
 package main
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
 	"fmt"
 	"math/rand"
-	"strconv"
 	"time"
 
 	"github.com/jinzhu/gorm"
@@ -13,60 +10,9 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 )
 
-type Movie struct {
-	MovieID uint `gorm:"primary_key"`
-	Title   string
-	Length  uint
-	Shows   []Show `gorm:"foreignkey:MovieID"`
-}
-
-type Show struct {
-	ShowID  uint `gorm:"primary_key"`
-	Screen  uint
-	Tickets []Ticket `gorm:"foreignkey:ShowID"`
-	Day     Day
-	DayID   uint
-	Time    Time
-	TimeID  uint
-	MovieID uint
-}
-
-type Ticket struct {
-	gorm.Model
-	Serial string `gorm:"unique;not null"`
-	TierID uint
-	Tier   Tier
-	Date time.Time
-	ShowID uint
-}
-
-type Tier struct {
-	TierID uint `gorm:"primary_key"`
-	Price  float64
-}
-
-type Day struct {
-	DayID uint `gorm:"primary_key"`
-	Name  string
-}
-
-type Time struct {
-	TimeID uint `gorm:"primary_key"`
-	Desc   string
-	Hour   int
-}
-
 type Data struct {
 	db *gorm.DB
 	ran *rand.Rand
-}
-
-func (handle *Data) serial() (code string) {
-
-	hasher := sha256.New()
-	hasher.Write([]byte(strconv.Itoa(handle.ran.Intn(500))+time.Now().String()))
-	code = hex.EncodeToString(hasher.Sum(nil))[:8]
-	return
 }
 
 func (handle *Data) Init() {
@@ -75,7 +21,7 @@ func (handle *Data) Init() {
 	}
 
 	var err error
-	handle.db, err = gorm.Open("sqlite3", "/home/andy/test.db")
+	handle.db, err = gorm.Open("sqlite3", "/tmp/test.db")
 
 	if err != nil {
 		panic("failed connection to db")
