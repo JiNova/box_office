@@ -60,7 +60,7 @@ func TestData_LoadAssociationsSingle(t *testing.T) {
 	}
 
 	for i, show := range mov.Shows {
-		if show.MovieID != 5 {
+		if show.MovieID != uint(movieId) {
 			t.Error("Show", i, "belongs to another movie!")
 		}
 	}
