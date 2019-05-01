@@ -1,7 +1,6 @@
 package main
 
 import (
-	"strconv"
 	"time"
 )
 
@@ -26,9 +25,7 @@ func (broker *DataBroker) GetAvailableTickets(date *time.Time, show *Show) (avai
 		panic(err)
 	}
 
-	keys := []string{date.String(), strconv.Itoa(int(show.ShowID))}
-	query := Query{"date = ? AND show_id = ?", keys}
-	if err := broker.dbhandler.QueryModel(&tickets, &query); err != nil {
+	if err := broker.dbhandler.QueryModelRaw(&tickets, "date = ? AND show_id = ?", date, show.ShowID); err != nil {
 		panic(err)
 	}
 	avail = make([]int, all)

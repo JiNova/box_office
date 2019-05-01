@@ -103,6 +103,21 @@ func (handle *DBHandler) QueryModel(resources interface{}, query *Query) error {
 	return nil
 }
 
+func (handle *DBHandler) QueryModelRaw(resources interface{}, statement string, args... interface{}) error {
+	t := reflect.Indirect(reflect.ValueOf(resources))
+
+	switch t.Kind() {
+	case reflect.Struct, reflect.Slice:
+		if err := handle.db.Where(statement, args...).Find(resources).Error; err != nil {
+			return err
+		}
+	default:
+		return errors.New("Resources must be a struct or slice!")
+	}
+
+	return nil
+}
+
 func (handle *DBHandler) LoadAssociations(resources interface{}, assocations ...string) error {
 	t := reflect.Indirect(reflect.ValueOf(resources))
 

@@ -10,9 +10,9 @@ func TestDataBroker_GetAvailableTickets(t *testing.T) {
 	broker.Init()
 	defer broker.Close()
 
-	now := time.Date(2019, 4, 24, 14, 0, 0, 0 ,time.Now().Location())
+	now := time.Date(2019, 4, 28, 14, 0, 0, 0 ,time.Now().Location())
 	var show Show
-	broker.dbhandler.FillModelById(&show, 21)
+	broker.dbhandler.FillModelById(&show, 75)
 
 	avail := broker.GetAvailableTickets(&now, &show)
 
