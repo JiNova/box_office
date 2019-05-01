@@ -26,7 +26,8 @@ func (broker *DataBroker) GetAvailableTickets(date *time.Time, show *Show) (avai
 		panic(err)
 	}
 
-	query := Query{"date = ? AND show_id = ?", []string{date.String(), strconv.Itoa(int(show.ShowID))}}
+	keys := []string{date.String(), strconv.Itoa(int(show.ShowID))}
+	query := Query{"date = ? AND show_id = ?", keys}
 	if err := broker.dbhandler.QueryModel(&tickets, &query); err != nil {
 		panic(err)
 	}
