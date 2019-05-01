@@ -24,6 +24,7 @@ func (broker *DataBroker) GetAvailableTickets(date *time.Time, show *Show) (avai
 	}
 
 	broker.dbhandler.db.Where("date = ? AND show_id = ?", date, show.ShowID).Find(&tickets)
+	//broker.dbhandler.QueryModel(&tickets, Query{"date = ? AND show_id = ?", })
 	avail = make([]int, all)
 
 	for i:= range avail {

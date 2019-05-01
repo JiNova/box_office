@@ -18,7 +18,7 @@ type DBHandler struct {
 
 type Query struct {
 	statement string
-	key string
+	keys []string
 }
 
 func (handle *DBHandler) Init() {
