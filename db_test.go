@@ -4,14 +4,14 @@ import (
 	"testing"
 )
 
-func TestData_LoadModels(t *testing.T) {
+func TestData_FillModels(t *testing.T) {
 	var data Data
 
 	data.Init()
 	defer data.Close()
 
 	var movs []Movie
-	err := data.LoadModels(&movs)
+	err := data.FillModels(&movs)
 
 	if movs == nil {
 		t.Error("Movie models not loaded successfuly")
