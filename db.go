@@ -17,6 +17,11 @@ type Data struct {
 	ran *rand.Rand
 }
 
+type Query struct {
+	statement string
+	key string
+}
+
 func (handle *Data) Init() {
 	if handle.db != nil {
 		panic("already connected")
@@ -77,6 +82,10 @@ func (handle *Data) FillModels(resources interface{}) error {
 		return errors.New("Resources must be a slice!")
 	}
 
+	return nil
+}
+
+func (handle *Data) QueryModel(resources interface{}, query *Query) error {
 	return nil
 }
 

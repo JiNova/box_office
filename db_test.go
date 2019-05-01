@@ -107,3 +107,19 @@ func TestData_CountEntries(t *testing.T) {
 		t.Error("Could not count days, got", err)
 	}
 }
+
+func TestData_QueryModel(t *testing.T) {
+	var data Data
+	data.Init()
+	defer data.Close()
+
+	var mov Movie
+	expectedId := uint(5)
+	query := Query{"name = ?", "Rogue One: A Star Wars Story"}
+
+	if err := data.QueryModel(&mov, &query); err != nil{
+		t.Error("Could not query, got", err)
+	} else if expectedId != mov.MovieID {
+		t.Error("Expected movie_id", expectedId, "got", mov.MovieID)
+	}
+}
