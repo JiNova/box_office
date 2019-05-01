@@ -35,3 +35,15 @@ func TestDataBroker_GetDayIdByName(t *testing.T) {
 		t.Error("Expected id 5, got", dayId)
 	}
 }
+
+func TestDataBroker_GetShowsByPlaytime(t *testing.T) {
+	var broker DataBroker
+	broker.Init()
+	defer broker.Close()
+
+	if shows := broker.GetShowsByPlaytime("Tuesday", 14); shows == nil {
+		t.Error("Could not load shows")
+	} else if len(shows) != 5 {
+		t.Error("Wrong number of shows, expected 5, got", len(shows))
+	}
+}
