@@ -4,9 +4,26 @@ import (
 	"testing"
 )
 
+func TestData_FillModelById(t *testing.T) {
+	var data Data
+	data.Init()
+	defer data.Close()
+
+	var mov Movie
+	err := data.FillModelById(&mov, 5)
+	expectedTitle := "Rogue One: A Star Wars Story"
+	expectedLen := uint(133)
+
+	if err != nil {
+		t.Error("Movie could not be loaded")
+	} else if mov.Title != expectedTitle || mov.Length != expectedLen {
+		t.Error("Expected", expectedTitle, "and", expectedLen,
+				"got", mov.Title, "and", mov.Length)
+	}
+}
+
 func TestData_FillModels(t *testing.T) {
 	var data Data
-
 	data.Init()
 	defer data.Close()
 

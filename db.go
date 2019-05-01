@@ -37,6 +37,10 @@ func (handle *Data) Close() {
 	_ = handle.db.Close()
 }
 
+func (handle *Data) FillModelById(resources interface{}, id int) error {
+	return nil
+}
+
 func (handle *Data) FillModels(resources interface{}) error {
 	t := reflect.Indirect(reflect.ValueOf(resources))
 
