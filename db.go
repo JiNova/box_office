@@ -90,6 +90,9 @@ func (handle *DBHandler) QueryModel(resources interface{}, query *Query) error {
 	switch t.Kind() {
 	case reflect.Struct, reflect.Slice:
 		keys := make([]interface{}, len(query.keys))
+		for i, key := range query.keys {
+			keys[i] = key
+		}
 		if err := handle.db.Where(query.statement, keys...).Find(resources).Error; err != nil {
 			return err
 		}

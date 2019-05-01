@@ -116,7 +116,8 @@ func TestData_QueryModelSingle(t *testing.T) {
 
 	var mov Movie
 	expectedId := uint(5)
-	query := Query{"title = ?", "Rogue One: A Star Wars Story"}
+	keys := []string{"Rogue One: A Star Wars Story"}
+	query := Query{"title = ?", keys}
 
 	if err := data.QueryModel(&mov, &query); err != nil{
 		t.Error("Could not query, got", err)
@@ -132,7 +133,8 @@ func TestData_QueryModelMulti(t *testing.T) {
 
 	var shows []Show
 	expectedId := uint(5)
-	query := Query{"movie_id = ?", strconv.Itoa(int(expectedId))}
+	keys := []string{strconv.Itoa(int(expectedId))}
+	query := Query{"movie_id = ?", keys}
 
 	if err := data.QueryModel(&shows, &query); err != nil{
 		t.Error("Could not query, got", err)
