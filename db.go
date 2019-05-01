@@ -16,11 +16,6 @@ type DBHandler struct {
 	ran *rand.Rand
 }
 
-type Query struct {
-	statement string
-	keys []string
-}
-
 func (handle *DBHandler) Init() {
 	if handle.db != nil {
 		panic("already connected")
