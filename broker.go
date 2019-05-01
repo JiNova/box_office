@@ -1,6 +1,9 @@
 package main
 
-import "time"
+import (
+	"strconv"
+	"time"
+)
 
 type DataBroker struct {
 	dbhandler DBHandler
@@ -23,8 +26,10 @@ func (broker *DataBroker) GetAvailableTickets(date *time.Time, show *Show) (avai
 		panic(err)
 	}
 
-	broker.dbhandler.db.Where("date = ? AND show_id = ?", date, show.ShowID).Find(&tickets)
-	//broker.dbhandler.QueryModel(&tickets, Query{"date = ? AND show_id = ?", })
+	query := Query{"date = ? AND show_id = ?", []string{date.String(), strconv.Itoa(int(show.ShowID))}}
+	if err := broker.dbhandler.QueryModel(&tickets, &query); err != nil {
+		panic(err)
+	}
 	avail = make([]int, all)
 
 	for i:= range avail {
