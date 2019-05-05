@@ -66,7 +66,7 @@ func (broker *DataBroker) GetTicketDatesBySerials(serials []string) (dates []tim
 	for _, serial := range serials {
 		var t Ticket
 		broker.dbhandler.QueryModel(&t, "serial = ?", serial)
-		if t.Date.Year() != 1 {
+		if t.Date.Year() != 1 { //if the year == 1 then the date object was not filled, no ticket found
 			dates = append(dates, t.Date)
 		}
 	}
