@@ -91,3 +91,7 @@ func (broker *DataBroker) GetTicketCountByDay(date *time.Time) int {
 
 	return matineeTickets + nightTickets
 }
+
+func (broker *DataBroker) GetSoldVacantTicketsByShow(date *time.Time, showID int) (sold int, vacant int) {
+	return
+}
