@@ -10,14 +10,14 @@ func TestDataBroker_GetAvailableTickets(t *testing.T) {
 	broker.Init()
 	defer broker.Close()
 
-	now := time.Date(2019, 4, 28, 14, 0, 0, 0 ,time.Now().Location())
+	now := time.Date(2019, 4, 28, 14, 0, 0, 0, time.Now().Location())
 	var show Show
 	broker.dbhandler.FillModelById(&show, 75)
 
 	avail := broker.GetAvailableTickets(&now, &show)
 
 	var sum int
-	for _,amount := range avail {
+	for _, amount := range avail {
 		sum += amount
 	}
 
@@ -31,8 +31,8 @@ func TestDataBroker_GetDayIdByName(t *testing.T) {
 	broker.Init()
 	defer broker.Close()
 
-	if dayId := broker.GetDayIdByName("Friday"); dayId != 5 {
-		t.Error("Expected id 5, got", dayId)
+	if dayID := broker.GetDayIdByName("Friday"); dayID != 5 {
+		t.Error("Expected id 5, got", dayID)
 	}
 }
 

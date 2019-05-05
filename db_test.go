@@ -19,7 +19,7 @@ func TestData_FillModelById(t *testing.T) {
 		t.Error("Movie could not be loaded", err)
 	} else if mov.Title != expectedTitle || mov.Length != expectedLen {
 		t.Error("Expected", expectedTitle, "and", expectedLen,
-				"got", mov.Title, "and", mov.Length)
+			"got", mov.Title, "and", mov.Length)
 	}
 }
 
@@ -47,8 +47,8 @@ func TestData_LoadAssociationsSingle(t *testing.T) {
 
 	var mov Movie
 	expectedShowNum := 5
-	movieId := 5
-	data.FillModelById(&mov, movieId)
+	movieID := 5
+	data.FillModelById(&mov, movieID)
 	mov.Shows = []Show{}
 	err := data.LoadAssociations(&mov, "Shows")
 
@@ -61,7 +61,7 @@ func TestData_LoadAssociationsSingle(t *testing.T) {
 	}
 
 	for i, show := range mov.Shows {
-		if show.MovieID != uint(movieId) {
+		if show.MovieID != uint(movieID) {
 			t.Error("Show", i, "belongs to another movie!")
 		}
 	}
@@ -76,7 +76,7 @@ func TestData_LoadAssociationsMulti(t *testing.T) {
 	expectedShowNum := 5
 	verifyMovIndex := 4
 	data.FillModels(&movs)
-	for _ , mov := range movs {
+	for _, mov := range movs {
 		mov.Shows = []Show{}
 	}
 
@@ -115,12 +115,12 @@ func TestData_QueryModelSingle(t *testing.T) {
 	defer data.Close()
 
 	var mov Movie
-	expectedId := uint(5)
+	expectedID := uint(5)
 
-	if err := data.QueryModel(&mov, "title = ?", "Rogue One: A Star Wars Story"); err != nil{
+	if err := data.QueryModel(&mov, "title = ?", "Rogue One: A Star Wars Story"); err != nil {
 		t.Error("Could not query, got", err)
-	} else if expectedId != mov.MovieID {
-		t.Error("Expected movie_id", expectedId, "got", mov.MovieID)
+	} else if expectedID != mov.MovieID {
+		t.Error("Expected movie_id", expectedID, "got", mov.MovieID)
 	}
 }
 
@@ -130,15 +130,15 @@ func TestData_QueryModelMulti(t *testing.T) {
 	defer data.Close()
 
 	var shows []Show
-	expectedId := uint(5)
+	expectedID := uint(5)
 
-	if err := data.QueryModel(&shows, "movie_id = ?", strconv.Itoa(int(expectedId))); err != nil{
+	if err := data.QueryModel(&shows, "movie_id = ?", strconv.Itoa(int(expectedID))); err != nil {
 		t.Error("Could not query, got", err)
 	}
 
-	for _,show := range shows {
-		if expectedId != show.MovieID {
-			t.Error("Expected movie_id", expectedId, "got", show.MovieID)
+	for _, show := range shows {
+		if expectedID != show.MovieID {
+			t.Error("Expected movie_id", expectedID, "got", show.MovieID)
 		}
 	}
 }
