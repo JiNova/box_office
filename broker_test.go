@@ -61,3 +61,16 @@ func TestDataBroker_GetTicketDatesBySerials(t *testing.T) {
 		t.Error("Wronger number of dates, expected 2, got", dates)
 	}
 }
+
+func TestDataBroker_GetTicketCountByDay(t *testing.T) {
+	var broker DataBroker
+	broker.Init()
+	defer broker.Close()
+
+	loc, _ := time.LoadLocation("America/Chicago")
+	day := time.Date(2019, time.April, 23, 0, 0, 0, 0, loc)
+
+	if count := broker.GetTicketCountByDay(&day); count != 30 {
+		t.Error("Wrong number of tickets, expected 30, got", count)
+	}
+}

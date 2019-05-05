@@ -73,3 +73,7 @@ func (broker *DataBroker) GetTicketDatesBySerials(serials []string) (dates []tim
 
 	return
 }
+
+func (broker *DataBroker) GetTicketCountByDay(date *time.Time) int {
+	return -1
+}
