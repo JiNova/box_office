@@ -68,9 +68,9 @@ func TestDataBroker_GetTicketCountByDay(t *testing.T) {
 	defer broker.Close()
 
 	loc, _ := time.LoadLocation("America/Chicago")
-	day := time.Date(2019, time.April, 23, 0, 0, 0, 0, loc)
+	day := time.Date(2019, time.April, 28, 0, 0, 0, 0, loc)
 
-	if count := broker.GetTicketCountByDay(&day); count != 30 {
-		t.Error("Wrong number of tickets, expected 30, got", count)
+	if count := broker.GetTicketCountByDay(&day); count != 19 {
+		t.Error("Wrong number of tickets, expected 19, got", count)
 	}
 }

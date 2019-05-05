@@ -12,7 +12,7 @@ import (
 )
 
 type DBHandler struct {
-	db *gorm.DB
+	db  *gorm.DB
 	ran *rand.Rand
 }
 
@@ -79,7 +79,7 @@ func (handle *DBHandler) FillModels(resources interface{}) error {
 	return nil
 }
 
-func (handle *DBHandler) QueryModel(resources interface{}, statement string, args... interface{}) error {
+func (handle *DBHandler) QueryModel(resources interface{}, statement string, args ...interface{}) error {
 	t := reflect.Indirect(reflect.ValueOf(resources))
 
 	switch t.Kind() {
@@ -92,6 +92,22 @@ func (handle *DBHandler) QueryModel(resources interface{}, statement string, arg
 	}
 
 	return nil
+}
+
+func (handle *DBHandler) QueryModelAndCount(resources interface{},
+	statement string, args ...interface{}) (count int, err error) {
+	t := reflect.Indirect(reflect.ValueOf(resources))
+
+	switch t.Kind() {
+	case reflect.Struct, reflect.Slice:
+		if err := handle.db.Where(statement, args...).Find(resources).Count(&count).Error; err != nil {
+			return 0, err
+		}
+	default:
+		return 0, errors.New("Resources must be a struct or slice!")
+	}
+
+	return
 }
 
 func (handle *DBHandler) LoadAssociations(resources interface{}, assocations ...string) error {
@@ -144,7 +160,7 @@ func (handle *DBHandler) GetAval(date *time.Time, show *Show) (avail []int) {
 
 	avail = make([]int, all)
 
-	for i:= range avail {
+	for i := range avail {
 		avail[i] = 10
 	}
 
@@ -155,11 +171,11 @@ func (handle *DBHandler) GetAval(date *time.Time, show *Show) (avail []int) {
 	return
 }
 
-func (handle *DBHandler) CreaTic(date *time.Time, show *Show, amount int, tier int) (serials []string){
+func (handle *DBHandler) CreaTic(date *time.Time, show *Show, amount int, tier int) (serials []string) {
 
 	tickets := make([]Ticket, amount)
 
-	for  i := 0; i < amount; i++ {
+	for i := 0; i < amount; i++ {
 		var ticket Ticket
 		ticket.Serial = handle.serial()
 		ticket.TierID = uint(tier)
@@ -212,7 +228,7 @@ func (handle *DBHandler) GetTiD2(date *time.Time, showID uint) (tickets int, vac
 	return
 }
 
-func (handle *DBHandler) TimDatS (weekday string, hour int) (shows []Show) {
+func (handle *DBHandler) TimDatS(weekday string, hour int) (shows []Show) {
 
 	var d Day
 	var t Time
@@ -285,7 +301,6 @@ func (handle *DBHandler) Plays(shows *[]Show) (day2h map[string]int) {
 
 	return
 }
-
 
 func (handle *DBHandler) Pricing(tier int) float64 {
 	var t Tier
