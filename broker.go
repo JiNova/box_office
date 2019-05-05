@@ -100,3 +100,7 @@ func (broker *DataBroker) GetSoldVacantTicketsByShow(date *time.Time, showID int
 	vacant = 40 - sold
 	return
 }
+
+func (broker *DataBroker) GetAllMovies() (movies []Movie) {
+	return
+}
