@@ -102,5 +102,8 @@ func (broker *DataBroker) GetSoldVacantTicketsByShow(date *time.Time, showID int
 }
 
 func (broker *DataBroker) GetAllMovies() (movies []Movie) {
+	if err := broker.dbhandler.FillModels(&movies); err != nil {
+		panic(err)
+	}
 	return
 }
