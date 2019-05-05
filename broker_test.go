@@ -55,9 +55,9 @@ func TestDataBroker_GetTicketDatesBySerials(t *testing.T) {
 
 	serials := []string{"fd7d3b7b", "cb45c26a", "abcdefgh"}
 
-	if tickets := broker.GetTicketDatesBySerials(serials); tickets == nil {
-		t.Error("Could not load tickets")
-	} else if len(tickets) != 2 {
-		t.Error("Wronger number of tickets, expected 2, got", len(tickets))
+	if dates := broker.GetTicketDatesBySerials(serials); dates == nil {
+		t.Error("Could not load dates")
+	} else if len(dates) != 2 {
+		t.Error("Wronger number of dates, expected 2, got", dates)
 	}
 }

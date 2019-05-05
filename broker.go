@@ -63,5 +63,13 @@ func (broker *DataBroker) GetShowsByPlaytime(weekday string, hour int) (shows []
 }
 
 func (broker *DataBroker) GetTicketDatesBySerials(serials []string) (dates []time.Time) {
-	return nil
+	for _, serial := range serials {
+		var t Ticket
+		broker.dbhandler.QueryModel(&t, "serial = ?", serial)
+		if t.Date.Year() != 1 {
+			dates = append(dates, t.Date)
+		}
+	}
+
+	return
 }
