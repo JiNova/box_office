@@ -75,19 +75,19 @@ func (broker *DataBroker) GetTicketDatesBySerials(serials []string) (dates []tim
 }
 
 func (broker *DataBroker) GetTicketCountByDay(date *time.Time) int {
-	loc, _ := time.LoadLocation("America/Chicago")
-	show1 := time.Date(date.Year(), date.Month(), date.Day(), 14, 0, 0, 0, loc)
-	show2 := time.Date(date.Year(), date.Month(), date.Day(), 20, 0, 0, 0, loc)
+	location, _ := time.LoadLocation("America/Chicago")
+	matinee := time.Date(date.Year(), date.Month(), date.Day(), 14, 0, 0, 0, location)
+	nightShow := time.Date(date.Year(), date.Month(), date.Day(), 20, 0, 0, 0, location)
 
-	t1, err := broker.dbhandler.QueryModelAndCount(&[]Ticket{}, "date = ?", show1)
+	matineeTickets, err := broker.dbhandler.QueryModelAndCount(&[]Ticket{}, "date = ?", matinee)
 	if err != nil {
 		panic(err)
 	}
 
-	t2, err := broker.dbhandler.QueryModelAndCount(&[]Ticket{}, "date = ?", show2)
+	nightTickets, err := broker.dbhandler.QueryModelAndCount(&[]Ticket{}, "date = ?", nightShow)
 	if err != nil {
 		panic(err)
 	}
 
-	return t1 + t2
+	return matineeTickets + nightTickets
 }
