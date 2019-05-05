@@ -93,5 +93,10 @@ func (broker *DataBroker) GetTicketCountByDay(date *time.Time) int {
 }
 
 func (broker *DataBroker) GetSoldVacantTicketsByShow(date *time.Time, showID int) (sold int, vacant int) {
+	sold, err := broker.dbhandler.QueryModelAndCount(&[]Ticket{}, "date = ? AND show_id = ?", date, showID)
+	if err != nil {
+		panic(err)
+	}
+	vacant = 40 - sold
 	return
 }
