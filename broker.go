@@ -16,6 +16,12 @@ func (broker *DataBroker) Close() {
 	broker.dbhandler.Close()
 }
 
+func (broker *DataBroker) getDayByName(weekday string) (day *Day) {
+	day = new(Day)
+	broker.dbhandler.QueryModel(day, "name = ?", weekday)
+	return
+}
+
 func (broker *DataBroker) GetAvailableTickets(date *time.Time, show *Show) (avail []int) {
 	var all int
 	var tickets []Ticket
@@ -30,7 +36,7 @@ func (broker *DataBroker) GetAvailableTickets(date *time.Time, show *Show) (avai
 	}
 	avail = make([]int, all)
 
-	for i:= range avail {
+	for i := range avail {
 		avail[i] = 10
 	}
 
@@ -42,16 +48,14 @@ func (broker *DataBroker) GetAvailableTickets(date *time.Time, show *Show) (avai
 }
 
 func (broker *DataBroker) GetDayIdByName(dayName string) int {
-	var day Day
-	broker.dbhandler.QueryModel(&day, "name = ?", dayName)
+	day := broker.getDayByName(dayName)
 	return int(day.DayID)
 }
 
 func (broker *DataBroker) GetShowsByPlaytime(weekday string, hour int) (shows []Show) {
-	var day Day
 	var time Time
 
-	broker.dbhandler.QueryModel(&day, "name = ?", weekday)
+	day := broker.getDayByName(weekday)
 	broker.dbhandler.QueryModel(&time, "hour = ?", hour)
 	broker.dbhandler.QueryModel(&shows, "day_id = ? AND time_id = ?", day.DayID, time.TimeID)
 
