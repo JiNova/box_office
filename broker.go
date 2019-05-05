@@ -107,3 +107,7 @@ func (broker *DataBroker) GetAllMovies() (movies []Movie) {
 	}
 	return
 }
+
+func (broker *DataBroker) GetShowsByMovie(movie *Movie) (shows []Show) {
+	return
+}

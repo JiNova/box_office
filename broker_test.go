@@ -100,3 +100,14 @@ func TestDataBroker_GetAllMovies(t *testing.T) {
 		t.Error("Wrong number of movies, expected 13, got", len(movs))
 	}
 }
+
+func TestDataBroker_GetShowsByMovie(t *testing.T) {
+	var broker DataBroker
+	broker.Init()
+	defer broker.Close()
+
+	movs := broker.GetAllMovies()
+	if shows := broker.GetShowsByMovie(&(movs[0])); len(shows) != 7 {
+		t.Error("Wrong number of shows, expected 7, got", len(shows))
+	}
+}
