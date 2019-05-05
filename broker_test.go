@@ -47,3 +47,17 @@ func TestDataBroker_GetShowsByPlaytime(t *testing.T) {
 		t.Error("Wrong number of shows, expected 5, got", len(shows))
 	}
 }
+
+func TestDataBroker_GetTicketsBySerials(t *testing.T) {
+	var broker DataBroker
+	broker.Init()
+	defer broker.Close()
+
+	serials := []string{"fd7d3b7b", "cb45c26a", "abcdefgh"}
+
+	if tickets := broker.GetTicketsBySerials(serials); tickets == nil {
+		t.Error("Could not load tickets")
+	} else if len(tickets) != 2 {
+		t.Error("Wronger number of tickets, expected 2, got", len(tickets))
+	}
+}

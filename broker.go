@@ -61,3 +61,7 @@ func (broker *DataBroker) GetShowsByPlaytime(weekday string, hour int) (shows []
 
 	return
 }
+
+func (broker *DataBroker) GetTicketsBySerials(serials []string) (dates []time.Time) {
+	return nil
+}
