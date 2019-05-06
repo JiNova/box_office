@@ -126,5 +126,6 @@ func (broker *DataBroker) GetShowsByMovie(movie *Movie) (shows []Show) {
 			panic(err)
 		}
 	}
-	return
+
+	return movie.Shows
 }
