@@ -107,7 +107,8 @@ func TestDataBroker_GetShowsByMovie(t *testing.T) {
 	defer broker.Close()
 
 	movs := broker.GetAllMovies()
-	if shows := broker.GetShowsByMovie(&(movs[0])); len(shows) != 7 {
-		t.Error("Wrong number of shows, expected 7, got", len(shows))
+	broker.GetShowsByMovie(&(movs[0]))
+	if len(movs[0].Shows) != 7 {
+		t.Error("Wrong number of shows, expected 7, got", len(movs[0].Shows))
 	}
 }

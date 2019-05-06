@@ -149,6 +149,22 @@ func (handle *DBHandler) LoadAssociations(resources interface{}, assocations ...
 	return nil
 }
 
+func (handle *DBHandler) LoadRelated(model interface{}, related interface{}) (err error) {
+	t := reflect.Indirect(reflect.ValueOf(model))
+
+	switch t.Kind() {
+	case reflect.Struct, reflect.Slice:
+		if err = handle.db.Model(model).Related(related).Error; err != nil {
+			return
+		}
+	default:
+		err = errors.New("Resources must be a struct or slice!")
+		return
+	}
+
+	return
+}
+
 func (handle *DBHandler) GetAval(date *time.Time, show *Show) (avail []int) {
 	var all int
 	var tickets []Ticket

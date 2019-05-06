@@ -109,5 +109,24 @@ func (broker *DataBroker) GetAllMovies() (movies []Movie) {
 }
 
 func (broker *DataBroker) GetShowsByMovie(movie *Movie) (shows []Show) {
+	movie.Shows = []Show{}
+	if err := broker.dbhandler.LoadAssociations(movie, "Shows"); err != nil {
+		panic(err)
+	}
+
+	for i := range movie.Shows {
+		movie.Shows[i].Day = Day{}
+		movie.Shows[i].Time = Time{}
+		// if err := broker.dbhandler.LoadAssociations(&(movie.Shows[i]), "Day", "Time"); err != nil {
+		// 	panic(err)
+		// }
+		if err := broker.dbhandler.LoadRelated(&(movie.Shows[i]), &(movie.Shows[i].Day)); err != nil {
+			panic(err)
+		}
+
+		if err := broker.dbhandler.LoadRelated(&(movie.Shows[i]), &(movie.Shows[i].Time)); err != nil {
+			panic(err)
+		}
+	}
 	return
 }
