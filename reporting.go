@@ -23,23 +23,14 @@ func (reporter *ReportHandler) ProceedReporting() {
 		loc, _ := time.LoadLocation("America/Chicago")
 		reportDate := time.Date(day.Year(), day.Month(), day.Day(), hour.Hour(), 0, 0, 0, loc)
 
-		shows := reporter.broker.GetShowsByPlaytime(reportDate.Weekday().String(), reportDate.Hour())
-		movTit := reporter.broker.GetMovieTitlesByShows(shows)
-
-		for i, show := range shows {
-			output := fmt.Sprintf("(%v) %v on Screen %v", i+1, movTit[i], show.Screen)
-			fmt.Println(output)
-		}
-
-		choice, err = choose("which show")
-
+		show, movieTitle, err := reporter.GetSpecificShowFromUser(&reportDate)
 		if err != nil {
+			fmt.Println("Something went wrong, please try again!", err)
 			return
 		}
 
-		tickets, vacant := reporter.broker.GetSoldVacantTicketsByShow(&reportDate, shows[choice-1].ShowID)
-
-		output := fmt.Sprintf("%v on %v sold %v tickets, %v seats empty", movTit[choice-1],
+		tickets, vacant := reporter.broker.GetSoldVacantTicketsByShow(&reportDate, show.ShowID)
+		output := fmt.Sprintf("%v on %v sold %v tickets, %v seats empty", movieTitle,
 			reportDate.Format("Jan 2, 2006"), tickets, vacant)
 		fmt.Println(output)
 
@@ -80,4 +71,8 @@ func (reporter *ReportHandler) GetTimeFromUser() *time.Time {
 	}
 
 	return &hour
+}
+
+func (reporter *ReportHandler) GetSpecificShowFromUser(reportDate *time.Time) (show *Show, movieTitle string, err error) {
+	return
 }

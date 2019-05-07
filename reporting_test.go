@@ -41,3 +41,26 @@ func TestReportHandler_GetTimeFromUser(t *testing.T) {
 		t.Error("Wrong date returned, expected", expectedTime, "got", time)
 	}
 }
+
+func TestReportHandler_GetSpecificShowFromUser(t *testing.T) {
+	var broker DataBroker
+	broker.Init()
+
+	reporter := ReportHandler{&broker}
+	oldStdin := os.Stdin
+	inputfile := emulateUserInput("4")
+	loc, _ := time.LoadLocation("America/Chicago")
+	date := time.Date(2019, time.April, 28, 20, 0, 0, 0, loc)
+
+	defer os.Remove(inputfile.Name())      // clean up
+	defer func() { os.Stdin = oldStdin }() // Restore stdin
+	defer broker.Close()
+
+	if show, title, err := reporter.GetSpecificShowFromUser(&date); err != nil {
+		t.Error("Error while getting show from user, got", err)
+	} else if title != "Rogue One: A Star Wars Story" {
+		t.Error("Wrong movie title, expected \"Rogue One: A Star Wars Story\", got", title)
+	} else if show.ShowID != 28 {
+		t.Error("Shhow with wrong ID received, expected 28, got", show.ShowID)
+	}
+}
