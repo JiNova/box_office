@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -10,15 +11,12 @@ type RefundHandler struct {
 	broker *DataBroker
 }
 
-func (refunder *RefundHandler) refund() {
-	fmt.Println("Please provide the serial number(s), separating them with a space if you are " +
-		"trying to refund more than one ticket at a time")
+func (refunder *RefundHandler) ProceedRefund() {
 
-	var serials []string
-	if userInput := readcmd("serials"); userInput == "" || userInput == " " {
+	serials, err := refunder.GetSerialsFromUser()
+	if err != nil {
+		fmt.Println(err.Error())
 		return
-	} else {
-		serials = strings.Split(userInput, " ")
 	}
 
 	dates := refunder.broker.GetTicketDatesBySerials(serials)
@@ -34,4 +32,17 @@ func (refunder *RefundHandler) refund() {
 
 	refunder.broker.DeleteTicketsBySerial(serials)
 	fmt.Println("All your eligible tickets have been refunded!")
+}
+
+func (refunder *RefundHandler) GetSerialsFromUser() (serials []string, err error) {
+	fmt.Println("Please provide the serial number(s), separating them with a space if you are " +
+		"trying to refund more than one ticket at a time")
+
+	if userInput := readcmd("serials"); userInput == "" || userInput == " " {
+		return nil, errors.New("Invalid input!")
+	} else {
+		serials = strings.Split(userInput, " ")
+	}
+
+	return
 }

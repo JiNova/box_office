@@ -98,7 +98,7 @@ func main() {
 			seller.ProceedSelling()
 		case "refund":
 			refunder := RefundHandler{&broker}
-			refunder.refund()
+			refunder.ProceedRefund()
 		case "report":
 			report(&broker)
 		case "quit":
