@@ -18,7 +18,8 @@ func (reporter *ReportHandler) ProceedReporting() {
 	}
 
 	if choice == 1 {
-		day, hour := reporter.GetDateTimeFromUser(choice)
+		day := reporter.GetDateFromUser()
+		hour := reporter.GetTimeFromUser()
 		loc, _ := time.LoadLocation("America/Chicago")
 		reportDate := time.Date(day.Year(), day.Month(), day.Day(), hour.Hour(), 0, 0, 0, loc)
 
@@ -44,7 +45,7 @@ func (reporter *ReportHandler) ProceedReporting() {
 
 	} else if choice == 2 {
 
-		date, _ := reporter.GetDateTimeFromUser(choice)
+		date := reporter.GetDateFromUser()
 		output := fmt.Sprintf("On %v we sold %v tickets", date.Format("Jan 2, Mon"), reporter.broker.GetTicketCountByDay(date))
 		fmt.Println(output)
 
@@ -53,7 +54,7 @@ func (reporter *ReportHandler) ProceedReporting() {
 	}
 }
 
-func (reporter *ReportHandler) GetDateTimeFromUser(choice int) (*time.Time, *time.Time) {
+func (reporter *ReportHandler) GetDateFromUser() *time.Time {
 	fmt.Println("Which date? (mm/dd/yyyy)")
 	input := readcmd("date")
 
@@ -61,20 +62,22 @@ func (reporter *ReportHandler) GetDateTimeFromUser(choice int) (*time.Time, *tim
 
 	if err != nil {
 		fmt.Println("I did not understand that, sorry :(")
-		return nil, nil
+		return nil
 	}
 
-	if choice == 1 {
-		fmt.Println("Which time? (h am/pm)")
-		input = readcmd("time")
+	return &date
+}
 
-		hour, err := time.Parse("3 pm", input)
+func (reporter *ReportHandler) GetTimeFromUser() *time.Time {
+	fmt.Println("Which time? (h am/pm)")
+	input := readcmd("time")
 
-		if err != nil {
-			fmt.Println("I did not understand that, sorry :(")
-			return nil, nil
-		}
-		return &date, &hour
+	hour, err := time.Parse("3 pm", input)
+
+	if err != nil {
+		fmt.Println("I did not understand that, sorry :(")
+		return nil
 	}
-	return &date, nil
+
+	return &hour
 }
