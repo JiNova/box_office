@@ -17,7 +17,7 @@ type ReportHandler struct {
 func (reporter *ReportHandler) ProceedReporting() {
 
 	fmt.Println("Create a report for \n (1) A specific showtime \n (2) All shows on a specific date")
-	choice, err := choose("report")
+	choice, err := chooseMenuOption("report")
 	if err != nil {
 		return
 	}
@@ -99,7 +99,7 @@ func (reporter *ReportHandler) GetSpecificShowFromUser(reportDate *time.Time) (s
 		fmt.Println(output)
 	}
 
-	choice, err := choose("which show")
+	choice, err := chooseMenuOption("which show")
 
 	if err != nil {
 		return

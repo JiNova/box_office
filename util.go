@@ -22,7 +22,7 @@ func readcmd(prompt string) (text string) {
 	return
 }
 
-func choose(prompt string) (choice int, err error) {
+func chooseMenuOption(prompt string) (choice int, err error) {
 
 	choice, err = strconv.Atoi(readcmd(prompt))
 

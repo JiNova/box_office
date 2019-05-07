@@ -73,7 +73,7 @@ func (seller *SellHandler) PresentMovies() (movie *Movie, err error) {
 	}
 
 	fmt.Println()
-	choice, err := choose("Which movie")
+	choice, err := chooseMenuOption("Which movie")
 
 	if err != nil {
 		return
@@ -90,7 +90,7 @@ func (seller *SellHandler) ChooseShow(movie *Movie, shows []Show) (show *Show, p
 		fmt.Println(prompt)
 	}
 
-	choice, err := choose("Which show")
+	choice, err := chooseMenuOption("Which show")
 	if err != nil {
 		return
 	} else if choice < 0 || choice > len(shows) {
@@ -103,7 +103,7 @@ func (seller *SellHandler) ChooseShow(movie *Movie, shows []Show) (show *Show, p
 
 	if show.Day.Name == now.Weekday().String() && now.Hour() < show.Time.Hour {
 		fmt.Println("(1) Today or (2) in 7 days?")
-		if choice, err = choose("When"); err != nil {
+		if choice, err = chooseMenuOption("When"); err != nil {
 			return nil, nil, errors.New("Invalid choice!")
 		} else if choice < 1 || choice > 2 {
 			return
@@ -122,14 +122,14 @@ func (seller *SellHandler) ChooseTier(show *Show, availByTier []int) (tier int, 
 		fmt.Println(prompt)
 	}
 
-	tier, err = choose("Which tier")
+	tier, err = chooseMenuOption("Which tier")
 	return
 }
 
 func (seller *SellHandler) SellTickets(show *Show, date *time.Time, tier int, available int) (serials []string, err error) {
 	amount := 11
 	for available-amount < 0 {
-		amount, err = choose("How many tickets")
+		amount, err = chooseMenuOption("How many tickets")
 		if err != nil {
 			return
 		}

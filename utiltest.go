@@ -19,7 +19,7 @@ func TestUtil_ChooseOption(t *testing.T) {
 	tester.setUpMockInput("7")
 	defer tester.cleanUp()
 
-	if input, err := choose("prompt"); err != nil {
+	if input, err := chooseMenuOption("prompt"); err != nil {
 		t.Error("Error while receiving user choice, got", err)
 	} else if input != 7 {
 		t.Error("Wrong choice received, expected 7, got", input)
