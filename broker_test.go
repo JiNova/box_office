@@ -123,6 +123,10 @@ func TestDataBroker_CreateTickets(t *testing.T) {
 	show := broker.GetShowById(12)
 
 	if serials := broker.CreateTickets(&date, show, 4, 3); len(serials) != 4 {
-		t.Error("Wrong number of tickets created, expected 4, got", len(serials))
+		t.Error("Wrong number of serials created, expected 4, got", len(serials))
+	} else if len(show.Tickets) != 4 {
+		t.Error("Wrong number of tickets created, expected 4, got", len(show.Tickets))
+	} else { // Cleanup
+		broker.DeleteTicketsBySerial(serials)
 	}
 }

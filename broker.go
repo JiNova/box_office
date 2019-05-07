@@ -131,7 +131,24 @@ func (broker *DataBroker) GetShowsByMovie(movie *Movie) (shows []Show) {
 }
 
 func (broker *DataBroker) CreateTickets(date *time.Time, show *Show, amount int, tier int) (serials []string) {
+	tickets := make([]Ticket, amount)
+
+	for i := range tickets {
+		ticket := &(tickets[i])
+		ticket.Serial = broker.dbhandler.serial()
+		ticket.TierID = uint(tier)
+		ticket.Date = *date
+		serials = append(serials, ticket.Serial)
+	}
+
+	broker.dbhandler.CreateAssociations(show, "Tickets", tickets)
 	return
+}
+
+func (broker *DataBroker) DeleteTicketsBySerial(serials []string) {
+	for _, serial := range serials {
+		broker.dbhandler.QueryModelAndDeleteData(&Ticket{}, "serial = ?", serial)
+	}
 }
 
 func (broker *DataBroker) GetShowById(showID int) (show *Show) {

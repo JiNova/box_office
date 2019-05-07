@@ -110,6 +110,54 @@ func (handle *DBHandler) QueryModelAndCount(resources interface{},
 	return
 }
 
+func (handle *DBHandler) QueryModelAndDeleteData(resources interface{}, statement string, args ...interface{}) error {
+	t := reflect.Indirect(reflect.ValueOf(resources))
+
+	switch t.Kind() {
+	case reflect.Struct, reflect.Slice:
+		if err := handle.db.Where(statement, args...).Delete(resources).Error; err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (handle *DBHandler) CreateAssociations(resources interface{}, association string, data interface{}) error {
+	t := reflect.Indirect(reflect.ValueOf(resources))
+
+	switch t.Kind() {
+	case reflect.Slice:
+		if err := handle.db.Find(resources).Error; err != nil {
+			return err
+		}
+
+		for i := 0; i < t.Len(); i++ {
+			model := handle.db.Model(t.Index(i).Addr().Interface())
+			field := t.Index(i).FieldByName(association).Addr().Interface()
+
+			if err := model.Association(association).Append(field).Error; err != nil {
+				panic(err)
+			}
+		}
+	case reflect.Struct:
+		if err := handle.db.Find(resources).Error; err != nil {
+			return err
+		}
+
+		model := handle.db.Model(t.Addr().Interface())
+		//		field := t.FieldByName(association).Addr().Interface()
+
+		if err := model.Association(association).Append(data).Error; err != nil {
+			panic(err)
+		}
+	default:
+		return errors.New("Resources must be a slice or struct!")
+	}
+
+	return nil
+}
+
 func (handle *DBHandler) LoadAssociations(resources interface{}, assocations ...string) error {
 	t := reflect.Indirect(reflect.ValueOf(resources))
 
