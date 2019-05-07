@@ -13,7 +13,11 @@ func readcmd(prompt string) (text string) {
 
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Print(prompt + "> ")
-	text, _ = reader.ReadString('\n')
+	text, err := reader.ReadString('\n')
+	if err != nil && err.Error() != "EOF" {
+		panic(err)
+	}
+
 	text = strings.TrimSuffix(text, "\n")
 	return
 }
