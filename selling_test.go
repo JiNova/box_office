@@ -91,8 +91,35 @@ func TestSellHandler_ChooseTier(t *testing.T) {
 	date := time.Date(2019, time.May, 2, 14, 0, 0, 0, loc)
 	avail := broker.GetAvailableTickets(&date, show)
 	if tier, err := seller.ChooseTier(show, avail); err != nil {
-		t.Error("Error while chosing tier, ", err)
+		t.Error("Error while chosing tier,", err)
 	} else if tier != 4 {
 		t.Error("Resolved wrong tier, expected 4, got", tier)
+	}
+}
+
+func TestSellHanlder_SellTickets(t *testing.T) {
+	var broker DataBroker
+	broker.Init()
+
+	seller := SellHandler{&broker}
+	oldStdin := os.Stdin
+	inputfile := emulateUserInput("6")
+
+	defer os.Remove(inputfile.Name())      // clean up
+	defer func() { os.Stdin = oldStdin }() // Restore stdin
+	defer broker.Close()
+
+	show := broker.GetShowById(11)
+	loc, _ := time.LoadLocation("America/Chicago")
+	date := time.Date(2019, time.May, 2, 14, 0, 0, 0, loc)
+	tier := 1
+	available := 10
+
+	if serials, err := seller.SellTickets(show, &date, tier, available); err != nil {
+		t.Error("Error while buying tickets,", err)
+	} else if len(serials) != 6 {
+		t.Error("Expected 6 ticket serials, got", len(serials))
+	} else {
+		broker.DeleteTicketsBySerial(serials)
 	}
 }
