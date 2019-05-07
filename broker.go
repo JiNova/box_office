@@ -192,6 +192,18 @@ func (broker *DataBroker) GetShowById(showID int) (show *Show) {
 	return
 }
 
+func (broker *DataBroker) IsValidSerial(serial string) bool {
+	if err := broker.dbhandler.QueryModel(&Ticket{}, "serial = ?", serial); err != nil {
+		if err.Error() == "record not found" {
+			return false
+		} else {
+			panic(err)
+		}
+	} else {
+		return true
+	}
+}
+
 func (broker *DataBroker) GetTierPrice(tierNum int) float64 {
 	var tier Tier
 	if err := broker.dbhandler.QueryModel(&tier, "tier_id = ?", tierNum); err != nil {

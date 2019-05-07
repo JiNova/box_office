@@ -43,19 +43,22 @@ func (refunder *RefundHandler) GetSerialsFromUser() (serials []string, err error
 }
 
 func (refunder *RefundHandler) FilterSerialsForValid(serials []string) ([]string, error) {
-	filteredSerials := make([]string, len(serials))
-	if copiedElems := copy(filteredSerials, serials); copiedElems != len(serials) {
-		return nil, errors.New("could not copy serials to filter them")
+	var filteredSerials []string
+
+	for i, _ := range serials {
+		if refunder.broker.IsValidSerial(serials[i]) {
+			filteredSerials = append(filteredSerials, serials[i])
+		}
 	}
 
-	dates := refunder.broker.GetTicketDatesBySerials(serials)
+	dates := refunder.broker.GetTicketDatesBySerials(filteredSerials)
 	now := time.Now()
 
 	for i, date := range dates {
 		if date.Before(now) {
 			fmt.Println("Not refunding " + serials[i] + ", show already took place!")
-			serials[i] = serials[len(serials)-1]
-			serials = serials[:len(serials)-1]
+			filteredSerials[i] = serials[len(serials)-1]
+			filteredSerials = serials[:len(serials)-1]
 		}
 	}
 
