@@ -27,12 +27,12 @@ func (refunder *RefundHandler) GetSerialsFromUser() (serials []string, err error
 	fmt.Println("Please provide the serial number(s), separating them with a space if you are " +
 		"trying to refund more than one ticket at a time")
 
-	if userInput := readcmd("serials"); userInput == "" || userInput == " " {
+	var userInput string
+	if userInput = readcmd("serials"); userInput == "" || userInput == " " {
 		return nil, errors.New("Invalid input!")
-	} else {
-		serials = strings.Split(userInput, " ")
 	}
 
+	serials = strings.Split(userInput, " ")
 	return
 }
 

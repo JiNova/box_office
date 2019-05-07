@@ -2,6 +2,5 @@ package main
 
 import "testing"
 
-func TestRefundHandler_ProceedRefund(t *testing.T) {
-
+func TestRefundHandler_GetSerialsFromUser(t *testing.T) {
 }
