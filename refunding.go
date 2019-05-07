@@ -19,17 +19,6 @@ func (refunder *RefundHandler) ProceedRefund() {
 		return
 	}
 
-	dates := refunder.broker.GetTicketDatesBySerials(serials)
-	now := time.Now()
-
-	for i, date := range dates {
-		if date.Before(now) {
-			fmt.Println("Not refunding " + serials[i] + ", show already took place!")
-			serials[i] = serials[len(serials)-1]
-			serials = serials[:len(serials)-1]
-		}
-	}
-
 	refunder.broker.DeleteTicketsBySerial(serials)
 	fmt.Println("All your eligible tickets have been refunded!")
 }
@@ -45,4 +34,24 @@ func (refunder *RefundHandler) GetSerialsFromUser() (serials []string, err error
 	}
 
 	return
+}
+
+func (refunder *RefundHandler) FilterSerialsForValid(serials []string) ([]string, error) {
+	filteredSerials := make([]string, len(serials))
+	if copiedElems := copy(filteredSerials, serials); copiedElems != len(serials) {
+		return nil, errors.New("Could not copy serials to filter them!")
+	}
+
+	dates := refunder.broker.GetTicketDatesBySerials(serials)
+	now := time.Now()
+
+	for i, date := range dates {
+		if date.Before(now) {
+			fmt.Println("Not refunding " + serials[i] + ", show already took place!")
+			serials[i] = serials[len(serials)-1]
+			serials = serials[:len(serials)-1]
+		}
+	}
+
+	return filteredSerials, nil
 }
