@@ -21,10 +21,6 @@ func (seller *SellHandler) StartSelling() {
 	// if there is a show today check if it has already been shown
 	// if no, list twice
 	// otherwise once
-	//today := time.Now()
-	//now := time.Now().Format("3 pm")
-
-	//fmt.Println(today.String() + " " + now)
 	dates := genDate(seller.broker, &shows)
 	chDat := make([]time.Time, len(dates))
 	i := 0
@@ -109,6 +105,6 @@ func (seller *SellHandler) PresentMovies() (movie *Movie, err error) {
 	return
 }
 
-func (seller *SellHandler) ChooseShow(movieID int) {
-
+func (seller *SellHandler) ChooseShow(movie *Movie, shows []Show) (show *Show, playtime *time.Time, err error) {
+	return
 }

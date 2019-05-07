@@ -180,6 +180,12 @@ func (broker *DataBroker) GetMovieTitlesByShows(shows []Show) (movieTitles []str
 	return
 }
 
+func (broker *DataBroker) GetMovieById(movieID int) (movie *Movie) {
+	movie = new(Movie)
+	broker.dbhandler.FillModelById(movie, movieID)
+	return
+}
+
 func (broker *DataBroker) GetShowById(showID int) (show *Show) {
 	show = new(Show)
 	broker.dbhandler.FillModelById(show, showID)
