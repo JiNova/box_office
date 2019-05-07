@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"testing"
+	"time"
 )
 
 func emulateUserInput(input string) (inputfile *os.File) {
@@ -70,5 +71,28 @@ func TestSellHandler_ChooseShow(t *testing.T) {
 		t.Error("Wrong ShowID, expected 8, got", choice.ShowID)
 	} else if time.Weekday().String() != "Friday" || time.Hour() != 20 {
 		t.Error("Wrong playtime, expected Friday 2pm, got", time.Format("Monday 3pm"))
+	}
+}
+
+func TestSellHandler_ChooseTier(t *testing.T) {
+	var broker DataBroker
+	broker.Init()
+
+	seller := SellHandler{&broker}
+	oldStdin := os.Stdin
+	inputfile := emulateUserInput("4")
+
+	defer os.Remove(inputfile.Name())      // clean up
+	defer func() { os.Stdin = oldStdin }() // Restore stdin
+	defer broker.Close()
+
+	show := broker.GetShowById(11)
+	loc, _ := time.LoadLocation("America/Chicago")
+	date := time.Date(2019, time.May, 2, 14, 0, 0, 0, loc)
+	avail := broker.GetAvailableTickets(&date, show)
+	if tier, err := seller.ChooseTier(show, avail); err != nil {
+		t.Error("Error while chosing tier, ", err)
+	} else if tier != 4 {
+		t.Error("Resolved wrong tier, expected 4, got", tier)
 	}
 }

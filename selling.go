@@ -14,46 +14,42 @@ type SellHandler struct {
 
 func (seller *SellHandler) StartSelling() {
 
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("Something went wrong! Please try again from the beginning!", r)
+		}
+	}()
+
 	movie, err := seller.PresentMovies()
+	if err != nil {
+		fmt.Println("Something went wrong, please try again!")
+	}
+
 	shows := seller.broker.GetShowsByMovie(movie)
 
 	fmt.Println(movie.Title)
 
-	// if there is a show today check if it has already been shown
-	// if no, list twice
-	// otherwise once
 	show, date, err := seller.ChooseShow(movie, shows)
+	if err != nil {
+		fmt.Println("Something went wrong, please try again!")
+	}
+
 	avail := seller.broker.GetAvailableTickets(date, show)
 
 	fmt.Println(movie.Title + " on " + date.Format("Jan 2, Mon 3 pm"))
 
-	for i, amount := range avail {
-		price := pricing(seller.broker, i+1, &show.Day, &show.Time)
-		prompt := fmt.Sprintf("Tier %v: %v left, $%.2f each", i+1, amount, price)
-		fmt.Println(prompt)
-	}
-
-	tierCho, err := choose("Which tier")
-
+	ticketTier, err := seller.ChooseTier(show, avail)
 	if err != nil {
-		return
+		fmt.Println("Something went wrong, please try again!")
 	}
 
-	amount, err := choose("How many")
-
+	serials, err := seller.SellTickets(show, date, ticketTier, avail[ticketTier])
 	if err != nil {
-		return
+		fmt.Println("Something went wrong, please try again!")
 	}
 
-	if avail[tierCho-1]-amount < 0 {
-		fmt.Println("Not enough seats left!")
-		//FIXME: loop this
-		return
-	} else {
-		serials := seller.broker.CreateTickets(date, show, amount, tierCho)
-		output := fmt.Sprintf("The serials are %v. The customer will need them in case they want a refund!", serials)
-		fmt.Println(output)
-	}
+	output := fmt.Sprintf("The serials are %v. The customer will need them in case they want a refund!", serials)
+	fmt.Println(output)
 }
 
 func (seller *SellHandler) PresentMovies() (movie *Movie, err error) {
@@ -116,5 +112,29 @@ func (seller *SellHandler) ChooseShow(movie *Movie, shows []Show) (show *Show, p
 		}
 	}
 
+	return
+}
+
+func (seller *SellHandler) ChooseTier(show *Show, availByTier []int) (tier int, err error) {
+	for i, amount := range availByTier {
+		price := pricing(seller.broker, i+1, &show.Day, &show.Time)
+		prompt := fmt.Sprintf("Tier %v: %v left, $%.2f each", i+1, amount, price)
+		fmt.Println(prompt)
+	}
+
+	tier, err = choose("Which tier")
+	return
+}
+
+func (seller *SellHandler) SellTickets(show *Show, date *time.Time, tier int, available int) (serials []string, err error) {
+	amount := 11
+	for available-amount < 0 {
+		amount, err = choose("How many tickets")
+		if err != nil {
+			return
+		}
+	}
+
+	serials = seller.broker.CreateTickets(date, show, amount, tier)
 	return
 }
