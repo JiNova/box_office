@@ -102,3 +102,11 @@ func (seller *SellHandler) StartSelling() {
 		fmt.Println(output)
 	}
 }
+
+func (seller *SellHandler) PresentMovies() (choice int, err error) {
+	return
+}
+
+func (seller *SellHandler) ChooseShow(movieID int) {
+
+}
