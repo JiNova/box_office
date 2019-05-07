@@ -6,13 +6,17 @@ import (
 	"time"
 )
 
-func refund(broker *DataBroker) {
+type RefundHandler struct {
+	broker *DataBroker
+}
+
+func (refunder *RefundHandler) refund() {
 
 	fmt.Println("Please provide the serial number(s), separating them with a space if there you are " +
 		"trying to refund more than one ticket at a time")
 	serials := strings.Split(readcmd("serials"), " ")
 
-	dates := broker.GetTicketDatesBySerials(serials)
+	dates := refunder.broker.GetTicketDatesBySerials(serials)
 	now := time.Now()
 
 	for i, date := range dates {
@@ -23,6 +27,6 @@ func refund(broker *DataBroker) {
 		}
 	}
 
-	broker.DeleteTicketsBySerial(serials)
+	refunder.broker.DeleteTicketsBySerial(serials)
 	fmt.Println("All your eligible tickets have been refunded!")
 }
