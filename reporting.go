@@ -5,6 +5,11 @@ import (
 	"time"
 )
 
+const (
+	ShowtimeReport = iota + 1
+	DateReport
+)
+
 type ReportHandler struct {
 	broker *DataBroker
 }
@@ -17,7 +22,7 @@ func (reporter *ReportHandler) ProceedReporting() {
 		return
 	}
 
-	if choice == 1 {
+	if choice == ShowtimeReport {
 		day, err := reporter.GetDateFromUser()
 		if err != nil {
 			return
@@ -42,7 +47,7 @@ func (reporter *ReportHandler) ProceedReporting() {
 			reportDate.Format("Jan 2, 2006"), tickets, vacant)
 		fmt.Println(output)
 
-	} else if choice == 2 {
+	} else if choice == DateReport {
 
 		date, err := reporter.GetDateFromUser()
 		if err != nil {
