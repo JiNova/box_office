@@ -19,6 +19,12 @@ func (refunder *RefundHandler) ProceedRefund() {
 		return
 	}
 
+	serials, err = refunder.FilterSerialsForValid(serials)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+
 	refunder.broker.DeleteTicketsBySerial(serials)
 	fmt.Println("All your eligible tickets have been refunded!")
 }
@@ -29,7 +35,7 @@ func (refunder *RefundHandler) GetSerialsFromUser() (serials []string, err error
 
 	var userInput string
 	if userInput = readcmd("serials"); userInput == "" || userInput == " " {
-		return nil, errors.New("Invalid input!")
+		return nil, errors.New("invalid input")
 	}
 
 	serials = strings.Split(userInput, " ")
@@ -39,7 +45,7 @@ func (refunder *RefundHandler) GetSerialsFromUser() (serials []string, err error
 func (refunder *RefundHandler) FilterSerialsForValid(serials []string) ([]string, error) {
 	filteredSerials := make([]string, len(serials))
 	if copiedElems := copy(filteredSerials, serials); copiedElems != len(serials) {
-		return nil, errors.New("Could not copy serials to filter them!")
+		return nil, errors.New("could not copy serials to filter them")
 	}
 
 	dates := refunder.broker.GetTicketDatesBySerials(serials)
