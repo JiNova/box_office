@@ -129,3 +129,13 @@ func (broker *DataBroker) GetShowsByMovie(movie *Movie) (shows []Show) {
 
 	return movie.Shows
 }
+
+func (broker *DataBroker) CreateTickets(date *time.Time, show *Show, amount int, tier int) (serials []string) {
+	return
+}
+
+func (broker *DataBroker) GetShowById(showID int) (show *Show) {
+	show = new(Show)
+	broker.dbhandler.FillModelById(show, showID)
+	return
+}

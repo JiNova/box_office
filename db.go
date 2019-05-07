@@ -302,22 +302,6 @@ func (handle *DBHandler) ShowMov(shows *[]Show) (movies []string) {
 	return
 }
 
-func (handle *DBHandler) Plays(shows *[]Show) (day2h map[string]int) {
-
-	var d Day
-	var t Time
-
-	day2h = make(map[string]int)
-
-	for _, show := range *shows {
-		handle.db.Model(show).Related(&d)
-		handle.db.Model(show).Related(&t)
-		day2h[d.Name] = t.Hour
-	}
-
-	return
-}
-
 func (handle *DBHandler) Pricing(tier int) float64 {
 	var t Tier
 	handle.db.Where("tier_id = ?", tier).Find(&t)
