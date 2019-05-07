@@ -12,7 +12,7 @@ type SellHandler struct {
 	broker *DataBroker
 }
 
-func (seller *SellHandler) StartSelling() {
+func (seller *SellHandler) ProceedSelling() {
 
 	defer func() {
 		if r := recover(); r != nil {
