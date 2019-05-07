@@ -34,17 +34,11 @@ func TestSellHandler_PresentMovies(t *testing.T) {
 }
 
 func TestSellHandler_ChooseShow(t *testing.T) {
-	var broker DataBroker
-	broker.Init()
-	seller := SellHandler{&broker}
-	defer broker.Close()
+	seller, tester := sellingTestSetup("3")
+	defer sellingTestCleanup(seller, tester)
 
-	var tester TestHandler
-	tester.setUpMockInput("3")
-	defer tester.cleanUp()
-
-	movie := broker.GetMovieById(2)
-	shows := broker.GetShowsByMovie(movie)
+	movie := seller.broker.GetMovieById(2)
+	shows := seller.broker.GetShowsByMovie(movie)
 	if choice, time, err := seller.ChooseShow(movie, shows); err != nil {
 		t.Error("Error while choosing show", err)
 	} else if choice.ShowID != 10 {
