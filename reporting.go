@@ -18,31 +18,11 @@ func (reporter *ReportHandler) ProceedReporting() {
 	}
 
 	if choice == 1 {
-
-		fmt.Println("Which date? (mm/dd/yyyy)")
-		input := readcmd("date")
-
-		date, err := time.Parse("01/02/2006", input)
-
-		if err != nil {
-			fmt.Println("I did not understand that, sorry :(")
-			return
-		}
-
-		fmt.Println("Which time? (h am/pm)")
-		input = readcmd("time")
-
-		hour, err := time.Parse("3 pm", input)
-
-		if err != nil {
-			fmt.Println("I did not understand that, sorry :(")
-			return
-		}
-
+		day, hour := reporter.GetDateTimeFromUser(choice)
 		loc, _ := time.LoadLocation("America/Chicago")
-		date = time.Date(date.Year(), date.Month(), date.Day(), hour.Hour(), 0, 0, 0, loc)
+		reportDate := time.Date(day.Year(), day.Month(), day.Day(), hour.Hour(), 0, 0, 0, loc)
 
-		shows := reporter.broker.GetShowsByPlaytime(date.Weekday().String(), date.Hour())
+		shows := reporter.broker.GetShowsByPlaytime(reportDate.Weekday().String(), reportDate.Hour())
 		movTit := reporter.broker.GetMovieTitlesByShows(shows)
 
 		for i, show := range shows {
@@ -56,28 +36,45 @@ func (reporter *ReportHandler) ProceedReporting() {
 			return
 		}
 
-		tickets, vacant := reporter.broker.GetSoldVacantTicketsByShow(&date, shows[choice-1].ShowID)
+		tickets, vacant := reporter.broker.GetSoldVacantTicketsByShow(&reportDate, shows[choice-1].ShowID)
 
 		output := fmt.Sprintf("%v on %v sold %v tickets, %v seats empty", movTit[choice-1],
-			date.Format("Jan 2, 2006"), tickets, vacant)
+			reportDate.Format("Jan 2, 2006"), tickets, vacant)
 		fmt.Println(output)
 
 	} else if choice == 2 {
 
-		fmt.Println("Which date? (mm/dd/yyyy)")
-		input := readcmd("date")
-
-		date, err := time.Parse("01/02/2006", input)
-
-		if err != nil {
-			fmt.Println("I did not understand that, sorry :(")
-			return
-		}
-
-		output := fmt.Sprintf("On %v we sold %v tickets", date.Format("Jan 2, Mon"), reporter.broker.GetTicketCountByDay(&date))
+		date, _ := reporter.GetDateTimeFromUser(choice)
+		output := fmt.Sprintf("On %v we sold %v tickets", date.Format("Jan 2, Mon"), reporter.broker.GetTicketCountByDay(date))
 		fmt.Println(output)
 
 	} else {
 		fmt.Println("I did not understand that, sorry :(")
 	}
+}
+
+func (reporter *ReportHandler) GetDateTimeFromUser(choice int) (*time.Time, *time.Time) {
+	fmt.Println("Which date? (mm/dd/yyyy)")
+	input := readcmd("date")
+
+	date, err := time.Parse("01/02/2006", input)
+
+	if err != nil {
+		fmt.Println("I did not understand that, sorry :(")
+		return nil, nil
+	}
+
+	if choice == 1 {
+		fmt.Println("Which time? (h am/pm)")
+		input = readcmd("time")
+
+		hour, err := time.Parse("3 pm", input)
+
+		if err != nil {
+			fmt.Println("I did not understand that, sorry :(")
+			return nil, nil
+		}
+		return &date, &hour
+	}
+	return &date, nil
 }
