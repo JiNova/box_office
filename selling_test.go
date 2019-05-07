@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"os"
 	"testing"
 	"time"
@@ -10,23 +9,17 @@ import (
 func TestSellHandler_PresentMovies(t *testing.T) {
 	var broker DataBroker
 	broker.Init()
-
 	seller := SellHandler{&broker}
-	oldStdin := os.Stdin
-	inputfile := emulateUserInput("2")
-
-	defer os.Remove(inputfile.Name())      // clean up
-	defer func() { os.Stdin = oldStdin }() // Restore stdin
 	defer broker.Close()
+
+	var tester TestHandler
+	tester.setUpMockInput("2")
+	defer tester.cleanUp()
 
 	if choice, err := seller.PresentMovies(); err != nil {
 		t.Error("Error while choosing movie", err)
 	} else if choice.MovieID != 2 {
 		t.Error("Wrong movie chosen, expected 2, got", choice.MovieID)
-	}
-
-	if err := inputfile.Close(); err != nil {
-		log.Fatal(err)
 	}
 }
 

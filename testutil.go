@@ -6,18 +6,18 @@ import (
 )
 
 type TestHandler struct {
-	oldstdin     *os.File
-	testFilename string
+	oldstdin  *os.File
+	inputfile *os.File
 }
 
 func (handler *TestHandler) setUpMockInput(input string) {
 	handler.oldstdin = os.Stdin
-	inputfile := emulateUserInput("04/27/2019")
-	handler.testFilename = inputfile.Name()
+	handler.inputfile = emulateUserInput(input)
 }
 
 func (handler *TestHandler) cleanUp() {
-	os.Remove(handler.testFilename)
+	handler.inputfile.Close()
+	os.Remove(handler.inputfile.Name())
 	os.Stdin = handler.oldstdin
 }
 
