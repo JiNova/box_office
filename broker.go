@@ -1,19 +1,34 @@
 package main
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
+	"math/rand"
+	"strconv"
 	"time"
 )
 
 type DataBroker struct {
 	dbhandler DBHandler
+	ran       *rand.Rand
 }
 
 func (broker *DataBroker) Init() {
 	broker.dbhandler.Init()
+	s1 := rand.NewSource(time.Now().UnixNano())
+	broker.ran = rand.New(s1)
 }
 
 func (broker *DataBroker) Close() {
 	broker.dbhandler.Close()
+}
+
+func (broker *DataBroker) generateTicketSerial() (code string) {
+
+	hasher := sha256.New()
+	hasher.Write([]byte(strconv.Itoa(broker.ran.Intn(500)) + time.Now().String()))
+	code = hex.EncodeToString(hasher.Sum(nil))[:8]
+	return
 }
 
 func (broker *DataBroker) getDayByName(weekday string) (day *Day) {
@@ -92,7 +107,7 @@ func (broker *DataBroker) GetTicketCountByDay(date *time.Time) int {
 	return matineeTickets + nightTickets
 }
 
-func (broker *DataBroker) GetSoldVacantTicketsByShow(date *time.Time, showID int) (sold int, vacant int) {
+func (broker *DataBroker) GetSoldVacantTicketsByShow(date *time.Time, showID uint) (sold int, vacant int) {
 	sold, err := broker.dbhandler.QueryModelAndCount(&[]Ticket{}, "date = ? AND show_id = ?", date, showID)
 	if err != nil {
 		panic(err)
@@ -135,7 +150,7 @@ func (broker *DataBroker) CreateTickets(date *time.Time, show *Show, amount int,
 
 	for i := range tickets {
 		ticket := &(tickets[i])
-		ticket.Serial = broker.dbhandler.serial()
+		ticket.Serial = broker.generateTicketSerial()
 		ticket.TierID = uint(tier)
 		ticket.Date = *date
 		serials = append(serials, ticket.Serial)

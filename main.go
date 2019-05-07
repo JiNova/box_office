@@ -9,25 +9,25 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 )
 
-func sell (data *DBHandler) {
+func sell(broker *DataBroker) {
 
 	var maxLen int
 
-	movies := data.Movies()
-	for i,mov := range movies {
-		length := len("("+strconv.Itoa(i+1)+") "+mov.Title)
+	movies := broker.GetAllMovies()
+	for i, mov := range movies {
+		length := len("(" + strconv.Itoa(i+1) + ") " + mov.Title)
 		if i == 0 || length > maxLen {
 			maxLen = length
 		}
 	}
 
-	for i,mov := range movies {
+	for i, mov := range movies {
 		if i%3 == 0 {
 			fmt.Println()
 		}
 
-		item := "("+strconv.Itoa(i+1)+") "+mov.Title
-		fmt.Print(item+strings.Repeat(" ", 1+maxLen-len(item)))
+		item := "(" + strconv.Itoa(i+1) + ") " + mov.Title
+		fmt.Print(item + strings.Repeat(" ", 1+maxLen-len(item)))
 	}
 
 	fmt.Println()
@@ -38,10 +38,9 @@ func sell (data *DBHandler) {
 	}
 
 	movie := movies[choice-1]
-	shows := data.Shows(&movie)
+	shows := broker.GetShowsByMovie(&movie)
 
 	fmt.Println(movie.Title)
-
 
 	// if there is a show today check if it has already been shown
 	// if no, list twice
@@ -50,11 +49,11 @@ func sell (data *DBHandler) {
 	//now := time.Now().Format("3 pm")
 
 	//fmt.Println(today.String() + " " + now)
-	dates := genDate(data, &shows)
+	dates := genDate(broker, &shows)
 	chDat := make([]time.Time, len(dates))
 	i := 0
 
-	for date,show := range dates {
+	for date, show := range dates {
 
 		chDat[i] = date
 		prompt := fmt.Sprintf("(%v) %v %v on Screen %v", i+1, date.Format("Jan 2, Mon"), show.Time.Desc, show.Screen)
@@ -70,12 +69,12 @@ func sell (data *DBHandler) {
 
 	date := chDat[choice-1]
 	show := dates[date]
-	avail := data.GetAval(&date, &show)
+	avail := broker.GetAvailableTickets(&date, &show)
 
 	fmt.Println(movie.Title + " on " + date.Format("Jan 2, Mon 3 pm"))
 
-	for i,amount := range avail{
-		price := pricing(data, i+1, &show.Day, &show.Time)
+	for i, amount := range avail {
+		price := pricing(broker, i+1, &show.Day, &show.Time)
 		prompt := fmt.Sprintf("Tier %v: %v left, $%.2f each", i+1, amount, price)
 		fmt.Println(prompt)
 	}
@@ -97,22 +96,22 @@ func sell (data *DBHandler) {
 		//FIXME: loop this
 		return
 	} else {
-		serials := data.CreaTic(&date, &show, amount, tierCho)
+		serials := broker.CreateTickets(&date, &show, amount, tierCho)
 		output := fmt.Sprintf("The serials are %v. The customer will need them in case they want a refund!", serials)
 		fmt.Println(output)
 	}
 }
 
-func refund(data *DBHandler) {
+func refund(broker *DataBroker) {
 
 	fmt.Println("Please provide the serial number(s), separating them with a space if there you are " +
-					"trying to refund more than one ticket at a time")
+		"trying to refund more than one ticket at a time")
 	serials := strings.Split(readcmd("serials"), " ")
 
-	dates := data.GetTic(serials)
+	dates := broker.GetTicketDatesBySerials(serials)
 	now := time.Now()
 
-	for i,date := range dates {
+	for i, date := range dates {
 		if date.Before(now) {
 			fmt.Println("Not refunding " + serials[i] + ", show already took place!")
 			serials[i] = serials[len(serials)-1]
@@ -120,12 +119,11 @@ func refund(data *DBHandler) {
 		}
 	}
 
-	data.DelTic(serials)
-
+	broker.DeleteTicketsBySerial(serials)
 	fmt.Println("All your eligible tickets have been refunded!")
 }
 
-func report(data *DBHandler) {
+func report(broker *DataBroker) {
 
 	fmt.Println("Create a report for \n (1) A specific showtime \n (2) All shows on a specific date")
 	choice, err := choose("report")
@@ -159,8 +157,8 @@ func report(data *DBHandler) {
 		loc, _ := time.LoadLocation("America/Chicago")
 		date = time.Date(date.Year(), date.Month(), date.Day(), hour.Hour(), 0, 0, 0, loc)
 
-		shows := data.TimDatS(date.Weekday().String(),  date.Hour())
-		movTit := data.ShowMov(&shows)
+		shows := broker.GetShowsByPlaytime(date.Weekday().String(), date.Hour())
+		movTit := broker.GetMovieTitlesByShows(shows)
 
 		for i, show := range shows {
 			output := fmt.Sprintf("(%v) %v on Screen %v", i+1, movTit[i], show.Screen)
@@ -173,10 +171,10 @@ func report(data *DBHandler) {
 			return
 		}
 
-		tickets, vacant := data.GetTiD2(&date, shows[choice-1].ShowID)
+		tickets, vacant := broker.GetSoldVacantTicketsByShow(&date, shows[choice-1].ShowID)
 
 		output := fmt.Sprintf("%v on %v sold %v tickets, %v seats empty", movTit[choice-1],
-							  date.Format("Jan 2, 2006"), tickets, vacant)
+			date.Format("Jan 2, 2006"), tickets, vacant)
 		fmt.Println(output)
 
 	} else if choice == 2 {
@@ -191,7 +189,7 @@ func report(data *DBHandler) {
 			return
 		}
 
-		output := fmt.Sprintf("On %v we sold %v tickets", date.Format("Jan 2, Mon") , data.GetTicD(&date))
+		output := fmt.Sprintf("On %v we sold %v tickets", date.Format("Jan 2, Mon"), broker.GetTicketCountByDay(&date))
 		fmt.Println(output)
 
 	} else {
@@ -200,11 +198,9 @@ func report(data *DBHandler) {
 }
 
 func main() {
-
-	var data DBHandler
-	data.Init()
-
-	defer data.Close()
+	var broker DataBroker
+	broker.Init()
+	defer broker.Close()
 
 	quit := false
 	var input string
@@ -214,11 +210,11 @@ func main() {
 
 		switch input {
 		case "sell":
-			sell(&data)
+			sell(&broker)
 		case "refund":
-			refund(&data)
+			refund(&broker)
 		case "report":
-			report(&data)
+			report(&broker)
 		case "quit":
 			quit = true
 		default:

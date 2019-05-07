@@ -82,7 +82,7 @@ func TestDataBroker_GetSoldUnsoldTicketsByShow(t *testing.T) {
 
 	loc, _ := time.LoadLocation("America/Chicago")
 	date := time.Date(2019, time.April, 28, 14, 0, 0, 0, loc)
-	showID := 27
+	showID := uint(27)
 
 	if sold, vacant := broker.GetSoldVacantTicketsByShow(&date, showID); sold != 9 || vacant != 31 {
 		t.Error("Wrong ticket constellation, expected 9 sold, 31 vacant, got",

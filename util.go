@@ -2,8 +2,6 @@ package main
 
 import (
 	"bufio"
-	"crypto/sha256"
-	"encoding/hex"
 	"fmt"
 	"os"
 	"strconv"
@@ -11,18 +9,10 @@ import (
 	"time"
 )
 
-func (handle *DBHandler) serial() (code string) {
-
-	hasher := sha256.New()
-	hasher.Write([]byte(strconv.Itoa(handle.ran.Intn(500))+time.Now().String()))
-	code = hex.EncodeToString(hasher.Sum(nil))[:8]
-	return
-}
-
 func readcmd(prompt string) (text string) {
 
 	reader := bufio.NewReader(os.Stdin)
-	fmt.Print(prompt+"> ")
+	fmt.Print(prompt + "> ")
 	text, _ = reader.ReadString('\n')
 	text = strings.TrimSuffix(text, "\n")
 	return
@@ -39,15 +29,15 @@ func choose(prompt string) (choice int, err error) {
 	return
 }
 
-func genDate(data *DBHandler, shows *[]Show) (showt map[time.Time]Show) {
+func genDate(broker *DataBroker, shows *[]Show) (showt map[time.Time]Show) {
 
 	today := time.Now()
-	todayId := data.DayId(today.Weekday().String())
+	todayID := broker.GetDayIdByName(today.Weekday().String())
 
 	showt = make(map[time.Time]Show)
 
 	for _, show := range *shows {
-		diff := (int(show.Day.DayID) - todayId) % 7
+		diff := (int(show.Day.DayID) - todayID) % 7
 
 		if diff == 0 {
 
@@ -71,10 +61,10 @@ func genDate(data *DBHandler, shows *[]Show) (showt map[time.Time]Show) {
 	return
 }
 
-func pricing(data *DBHandler, tier int, day *Day, time *Time) (price float64) {
+func pricing(broker *DataBroker, tier int, day *Day, time *Time) (price float64) {
 
 	var dis float64
-	price = data.Pricing(tier)
+	price = broker.GetTierPrice(tier)
 
 	// 10 percent discount Mon-Thu
 	if 1 <= day.DayID && day.DayID <= 4 {
