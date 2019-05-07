@@ -13,8 +13,13 @@ type RefundHandler struct {
 func (refunder *RefundHandler) refund() {
 	fmt.Println("Please provide the serial number(s), separating them with a space if you are " +
 		"trying to refund more than one ticket at a time")
-	userInput := readcmd("serials")
-	serials := strings.Split(userInput, " ")
+
+	var serials []string
+	if userInput := readcmd("serials"); userInput == "" || userInput == " " {
+		return
+	} else {
+		serials = strings.Split(userInput, " ")
+	}
 
 	dates := refunder.broker.GetTicketDatesBySerials(serials)
 	now := time.Now()
