@@ -170,3 +170,7 @@ func (broker *DataBroker) GetShowById(showID int) (show *Show) {
 	broker.dbhandler.FillModelById(show, showID)
 	return
 }
+
+func (broker *DataBroker) GetTierPrice(tier int) float64 {
+	return 0.0
+}

@@ -169,3 +169,13 @@ func TestDataBroker_GetMovieTitlesByShows(t *testing.T) {
 		}
 	}
 }
+
+func TestDataBroker_GetTierPrice(t *testing.T) {
+	var broker DataBroker
+	broker.Init()
+	defer broker.Close()
+
+	if price := broker.GetTierPrice(2); price != 15.0 {
+		t.Error("Received wrong price, expected 15, got", price)
+	}
+}
