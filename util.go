@@ -29,36 +29,16 @@ func choose(prompt string) (choice int, err error) {
 	return
 }
 
-func genDate(broker *DataBroker, shows *[]Show) (showt map[time.Time]Show) {
-
-	today := time.Now()
-	todayID := broker.GetDayIdByName(today.Weekday().String())
-
-	showt = make(map[time.Time]Show)
-
-	for _, show := range *shows {
-		diff := (int(show.Day.DayID) - todayID) % 7
-
-		if diff == 0 {
-
-			r := today.AddDate(0, 0, 7)
-
-			if show.Time.Hour < today.Hour() {
-				showt[time.Date(today.Year(), today.Month(), today.Day(), show.Time.Hour, 0, 0, 0, today.Location())] = show
-			}
-
-			showt[time.Date(today.Year(), today.Month(), r.Day(), show.Time.Hour, 0, 0, 0, today.Location())] = show
-		} else {
-			if diff < 0 {
-				diff += 7
-			}
-
-			r := today.AddDate(0, 0, diff)
-			showt[time.Date(r.Year(), r.Month(), r.Day(), show.Time.Hour, 0, 0, 0, today.Location())] = show
-		}
+func genPlaytimeFromShow(broker *DataBroker, show *Show, today *time.Time) *time.Time {
+	todayDayValue := broker.GetDayIdByName(today.Weekday().String())
+	diff := (int(show.Day.DayID) - todayDayValue) % 7
+	if diff < 0 {
+		diff += 7
 	}
 
-	return
+	location, _ := time.LoadLocation("America/Chicago")
+	playtime := time.Date(today.Year(), today.Month(), today.Day()+diff, show.Time.Hour, 0, 0, 0, location)
+	return &playtime
 }
 
 func pricing(broker *DataBroker, tier int, day *Day, time *Time) (price float64) {

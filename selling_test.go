@@ -56,7 +56,7 @@ func TestSellHandler_ChooseShow(t *testing.T) {
 
 	seller := SellHandler{&broker}
 	oldStdin := os.Stdin
-	inputfile := emulateUserInput("2")
+	inputfile := emulateUserInput("3")
 
 	defer os.Remove(inputfile.Name())      // clean up
 	defer func() { os.Stdin = oldStdin }() // Restore stdin
@@ -66,9 +66,9 @@ func TestSellHandler_ChooseShow(t *testing.T) {
 	shows := broker.GetShowsByMovie(movie)
 	if choice, time, err := seller.ChooseShow(movie, shows); err != nil {
 		t.Error("Error while choosing show", err)
-	} else if choice.ShowID != 8 {
+	} else if choice.ShowID != 10 {
 		t.Error("Wrong ShowID, expected 8, got", choice.ShowID)
-	} else if time.Weekday().String() != "Tuesday" || time.Hour() != 14 {
-		t.Error("Wrong playtime, expected Tuesday 2pm, got", time.Format("Monday 3pm"))
+	} else if time.Weekday().String() != "Friday" || time.Hour() != 20 {
+		t.Error("Wrong playtime, expected Friday 2pm, got", time.Format("Monday 3pm"))
 	}
 }

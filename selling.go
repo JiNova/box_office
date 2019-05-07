@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -21,27 +22,8 @@ func (seller *SellHandler) StartSelling() {
 	// if there is a show today check if it has already been shown
 	// if no, list twice
 	// otherwise once
-	dates := genDate(seller.broker, &shows)
-	chDat := make([]time.Time, len(dates))
-	i := 0
-
-	for date, show := range dates {
-
-		chDat[i] = date
-		prompt := fmt.Sprintf("(%v) %v %v on Screen %v", i+1, date.Format("Jan 2, Mon"), show.Time.Desc, show.Screen)
-		fmt.Println(prompt)
-		i++
-	}
-
-	choice, err := choose("Which show")
-
-	if err != nil {
-		return
-	}
-
-	date := chDat[choice-1]
-	show := dates[date]
-	avail := seller.broker.GetAvailableTickets(&date, &show)
+	show, date, err := seller.ChooseShow(movie, shows)
+	avail := seller.broker.GetAvailableTickets(date, show)
 
 	fmt.Println(movie.Title + " on " + date.Format("Jan 2, Mon 3 pm"))
 
@@ -68,7 +50,7 @@ func (seller *SellHandler) StartSelling() {
 		//FIXME: loop this
 		return
 	} else {
-		serials := seller.broker.CreateTickets(&date, &show, amount, tierCho)
+		serials := seller.broker.CreateTickets(date, show, amount, tierCho)
 		output := fmt.Sprintf("The serials are %v. The customer will need them in case they want a refund!", serials)
 		fmt.Println(output)
 	}
@@ -106,5 +88,33 @@ func (seller *SellHandler) PresentMovies() (movie *Movie, err error) {
 }
 
 func (seller *SellHandler) ChooseShow(movie *Movie, shows []Show) (show *Show, playtime *time.Time, err error) {
+
+	for i, show := range shows {
+		prompt := fmt.Sprintf("(%v) %v, at %v", i+1, show.Day.Name, show.Time.Desc)
+		fmt.Println(prompt)
+	}
+
+	choice, err := choose("Which show")
+	if err != nil {
+		return
+	} else if choice < 0 || choice > len(shows) {
+		return nil, nil, errors.New("Invalid choice!")
+	}
+
+	show = &(shows[choice-1])
+	now := time.Now()
+	playtime = genPlaytimeFromShow(seller.broker, show, &now)
+
+	if show.Day.Name == now.Weekday().String() && now.Hour() < show.Time.Hour {
+		fmt.Println("(1) Today or (2) in 7 days?")
+		if choice, err = choose("When"); err != nil {
+			return nil, nil, errors.New("Invalid choice!")
+		} else if choice < 1 || choice > 2 {
+			return
+		} else if choice == 2 {
+			playtime.AddDate(0, 0, 7)
+		}
+	}
+
 	return
 }
