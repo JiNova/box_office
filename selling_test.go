@@ -33,7 +33,7 @@ func TestSellHandler_PresentMovies(t *testing.T) {
 
 	seller := SellHandler{&broker}
 	oldStdin := os.Stdin
-	inputfile := emulateUserInput("Tom")
+	inputfile := emulateUserInput("2")
 
 	defer os.Remove(inputfile.Name())      // clean up
 	defer func() { os.Stdin = oldStdin }() // Restore stdin
@@ -41,8 +41,8 @@ func TestSellHandler_PresentMovies(t *testing.T) {
 
 	if choice, err := seller.PresentMovies(); err != nil {
 		t.Error("Error while choosing movie", err)
-	} else if choice != 2 {
-		t.Error("Wrong movie chosen, expected 2, got", choice)
+	} else if choice.MovieID != 2 {
+		t.Error("Wrong movie chosen, expected 2, got", choice.MovieID)
 	}
 
 	if err := inputfile.Close(); err != nil {

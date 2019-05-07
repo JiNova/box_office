@@ -12,34 +12,9 @@ type SellHandler struct {
 }
 
 func (seller *SellHandler) StartSelling() {
-	var maxLen int
 
-	movies := seller.broker.GetAllMovies()
-	for i, mov := range movies {
-		length := len("(" + strconv.Itoa(i+1) + ") " + mov.Title)
-		if i == 0 || length > maxLen {
-			maxLen = length
-		}
-	}
-
-	for i, mov := range movies {
-		if i%3 == 0 {
-			fmt.Println()
-		}
-
-		item := "(" + strconv.Itoa(i+1) + ") " + mov.Title
-		fmt.Print(item + strings.Repeat(" ", 1+maxLen-len(item)))
-	}
-
-	fmt.Println()
-	choice, err := choose("Which movie")
-
-	if err != nil {
-		return
-	}
-
-	movie := movies[choice-1]
-	shows := seller.broker.GetShowsByMovie(&movie)
+	movie, err := seller.PresentMovies()
+	shows := seller.broker.GetShowsByMovie(movie)
 
 	fmt.Println(movie.Title)
 
@@ -62,7 +37,7 @@ func (seller *SellHandler) StartSelling() {
 		i++
 	}
 
-	choice, err = choose("Which show")
+	choice, err := choose("Which show")
 
 	if err != nil {
 		return
@@ -103,7 +78,34 @@ func (seller *SellHandler) StartSelling() {
 	}
 }
 
-func (seller *SellHandler) PresentMovies() (choice int, err error) {
+func (seller *SellHandler) PresentMovies() (movie *Movie, err error) {
+	movies := seller.broker.GetAllMovies()
+
+	var maxItemLength int
+	for i, mov := range movies {
+		length := len("(" + strconv.Itoa(i+1) + ") " + mov.Title)
+		if i == 0 || length > maxItemLength {
+			maxItemLength = length
+		}
+	}
+
+	for i, mov := range movies {
+		if i%3 == 0 {
+			fmt.Println()
+		}
+
+		item := "(" + strconv.Itoa(i+1) + ") " + mov.Title
+		fmt.Print(item + strings.Repeat(" ", 1+maxItemLength-len(item)))
+	}
+
+	fmt.Println()
+	choice, err := choose("Which movie")
+
+	if err != nil {
+		return
+	}
+
+	movie = &(movies[choice-1])
 	return
 }
 
