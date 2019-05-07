@@ -1,6 +1,8 @@
 package main
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestRefundHandler_GetSerialsFromUser(t *testing.T) {
 }

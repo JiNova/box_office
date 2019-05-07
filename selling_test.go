@@ -1,32 +1,11 @@
 package main
 
 import (
-	"io/ioutil"
 	"log"
 	"os"
 	"testing"
 	"time"
 )
-
-func emulateUserInput(input string) (inputfile *os.File) {
-	content := []byte(input)
-
-	inputfile, err := ioutil.TempFile("", "input")
-	if err != nil {
-		panic(err)
-	}
-
-	if _, err := inputfile.Write(content); err != nil {
-		panic(err)
-	}
-
-	if _, err := inputfile.Seek(0, 0); err != nil {
-		panic(err)
-	}
-
-	os.Stdin = inputfile
-	return
-}
 
 func TestSellHandler_PresentMovies(t *testing.T) {
 	var broker DataBroker
