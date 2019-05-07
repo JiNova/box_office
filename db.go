@@ -140,8 +140,6 @@ func (handle *DBHandler) CreateAssociations(resources interface{}, association s
 		}
 
 		model := handle.db.Model(t.Addr().Interface())
-		//		field := t.FieldByName(association).Addr().Interface()
-
 		if err := model.Association(association).Append(data).Error; err != nil {
 			panic(err)
 		}
