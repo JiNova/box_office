@@ -1,7 +1,6 @@
 package main
 
 import (
-	"os"
 	"testing"
 	"time"
 )
@@ -64,18 +63,10 @@ func TestSellHandler_ChooseTier(t *testing.T) {
 }
 
 func TestSellHanlder_SellTickets(t *testing.T) {
-	var broker DataBroker
-	broker.Init()
+	seller, tester := sellingTestSetup("6")
+	defer sellingTestCleanup(seller, tester)
 
-	seller := SellHandler{&broker}
-	oldStdin := os.Stdin
-	inputfile := emulateUserInput("6")
-
-	defer os.Remove(inputfile.Name())      // clean up
-	defer func() { os.Stdin = oldStdin }() // Restore stdin
-	defer broker.Close()
-
-	show := broker.GetShowById(11)
+	show := seller.broker.GetShowById(11)
 	loc, _ := time.LoadLocation("America/Chicago")
 	date := time.Date(2019, time.May, 2, 14, 0, 0, 0, loc)
 	tier := 1
@@ -86,6 +77,6 @@ func TestSellHanlder_SellTickets(t *testing.T) {
 	} else if len(serials) != 6 {
 		t.Error("Expected 6 ticket serials, got", len(serials))
 	} else {
-		broker.DeleteTicketsBySerial(serials)
+		seller.broker.DeleteTicketsBySerial(serials)
 	}
 }
