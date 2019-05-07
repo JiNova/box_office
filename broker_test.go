@@ -146,3 +146,26 @@ func TestDataBroker_DeleteTicketsBySerial(t *testing.T) {
 		t.Error("Deleting of tickets unsucessful!")
 	}
 }
+
+func TestDataBroker_GetMovieTitlesByShows(t *testing.T) {
+	var broker DataBroker
+	broker.Init()
+	defer broker.Close()
+
+	show1 := broker.GetShowById(12)
+	show2 := broker.GetShowById(28)
+	show3 := broker.GetShowById(59)
+	shows := []Show{*show1, *show2, *show3}
+	expectedTitles := []string{"Interstellar", "Rogue One: A Star Wars Story", "March of the Penguins"}
+
+	if titles := broker.GetMovieTitlesByShows(&shows); len(titles) != 3 {
+		t.Error("Received wrong number of titles, expected 3, got", len(titles))
+	} else {
+		for i, title := range titles {
+			if title != expectedTitles[i] {
+				t.Error("Show", i+1, "with ID", shows[i].ShowID, "has wrong title, expected", expectedTitles[i],
+					"got", title)
+			}
+		}
+	}
+}

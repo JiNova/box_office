@@ -153,6 +153,10 @@ func (broker *DataBroker) DeleteTicketsBySerial(serials []string) {
 	}
 }
 
+func (broker *DataBroker) GetMovieTitlesByShows(shows *[]Show) (movies []string) {
+	return
+}
+
 func (broker *DataBroker) GetShowById(showID int) (show *Show) {
 	show = new(Show)
 	broker.dbhandler.FillModelById(show, showID)
