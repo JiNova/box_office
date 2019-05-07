@@ -26,14 +26,12 @@ func TestSellHandler_PresentMovies(t *testing.T) {
 func TestSellHandler_ChooseShow(t *testing.T) {
 	var broker DataBroker
 	broker.Init()
-
 	seller := SellHandler{&broker}
-	oldStdin := os.Stdin
-	inputfile := emulateUserInput("3")
-
-	defer os.Remove(inputfile.Name())      // clean up
-	defer func() { os.Stdin = oldStdin }() // Restore stdin
 	defer broker.Close()
+
+	var tester TestHandler
+	tester.setUpMockInput("3")
+	defer tester.cleanUp()
 
 	movie := broker.GetMovieById(2)
 	shows := broker.GetShowsByMovie(movie)
