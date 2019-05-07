@@ -23,7 +23,11 @@ func (reporter *ReportHandler) ProceedReporting() {
 			return
 		}
 
-		hour := reporter.GetTimeFromUser()
+		hour, err := reporter.GetTimeFromUser()
+		if err != nil {
+			return
+		}
+
 		loc, _ := time.LoadLocation("America/Chicago")
 		reportDate := time.Date(day.Year(), day.Month(), day.Day(), hour.Hour(), 0, 0, 0, loc)
 
@@ -67,7 +71,7 @@ func (reporter *ReportHandler) GetDateFromUser() (*time.Time, error) {
 	return &date, nil
 }
 
-func (reporter *ReportHandler) GetTimeFromUser() *time.Time {
+func (reporter *ReportHandler) GetTimeFromUser() (*time.Time, error) {
 	fmt.Println("Which time? (h am/pm)")
 	input := readcmd("time")
 
@@ -75,10 +79,10 @@ func (reporter *ReportHandler) GetTimeFromUser() *time.Time {
 
 	if err != nil {
 		fmt.Println("I did not understand that, sorry :(")
-		return nil
+		return nil, err
 	}
 
-	return &hour
+	return &hour, nil
 }
 
 func (reporter *ReportHandler) GetSpecificShowFromUser(reportDate *time.Time) (show *Show, movieTitle string, err error) {

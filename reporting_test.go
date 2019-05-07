@@ -39,7 +39,9 @@ func TestReportHandler_GetTimeFromUser(t *testing.T) {
 	defer func() { os.Stdin = oldStdin }() // Restore stdin
 	defer broker.Close()
 
-	if time := reporter.GetTimeFromUser(); !time.Equal(expectedTime) {
+	if time, err := reporter.GetTimeFromUser(); err != nil {
+		t.Error("Error when parsing user time, got", err)
+	} else if !time.Equal(expectedTime) {
 		t.Error("Wrong date returned, expected", expectedTime, "got", time)
 	}
 }
