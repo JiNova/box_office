@@ -130,3 +130,19 @@ func TestDataBroker_CreateTickets(t *testing.T) {
 		broker.DeleteTicketsBySerial(serials)
 	}
 }
+
+func TestDataBroker_DeleteTicketsBySerial(t *testing.T) {
+	var broker DataBroker
+	broker.Init()
+	defer broker.Close()
+
+	loc, _ := time.LoadLocation("America/Chicago")
+	date := time.Date(2019, time.April, 27, 20, 0, 0, 0, loc)
+	show := broker.GetShowById(12)
+	serials := broker.CreateTickets(&date, show, 4, 3)
+	broker.DeleteTicketsBySerial(serials)
+
+	if avail := broker.GetAvailableTickets(&date, show); avail[3] != 10 {
+		t.Error("Deleting of tickets unsucessful!")
+	}
+}

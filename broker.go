@@ -147,7 +147,9 @@ func (broker *DataBroker) CreateTickets(date *time.Time, show *Show, amount int,
 
 func (broker *DataBroker) DeleteTicketsBySerial(serials []string) {
 	for _, serial := range serials {
-		broker.dbhandler.QueryModelAndDeleteData(&Ticket{}, "serial = ?", serial)
+		if err := broker.dbhandler.QueryModelAndDeleteData(&Ticket{}, "serial = ?", serial); err != nil {
+			panic(err)
+		}
 	}
 }
 
