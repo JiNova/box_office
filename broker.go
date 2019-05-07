@@ -171,6 +171,10 @@ func (broker *DataBroker) GetShowById(showID int) (show *Show) {
 	return
 }
 
-func (broker *DataBroker) GetTierPrice(tier int) float64 {
-	return 0.0
+func (broker *DataBroker) GetTierPrice(tierNum int) float64 {
+	var tier Tier
+	if err := broker.dbhandler.QueryModel(&tier, "tier_id = ?", tierNum); err != nil {
+		panic(err)
+	}
+	return tier.Price
 }
