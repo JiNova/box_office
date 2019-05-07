@@ -158,7 +158,7 @@ func TestDataBroker_GetMovieTitlesByShows(t *testing.T) {
 	shows := []Show{*show1, *show2, *show3}
 	expectedTitles := []string{"Interstellar", "Rogue One: A Star Wars Story", "March of the Penguins"}
 
-	if titles := broker.GetMovieTitlesByShows(&shows); len(titles) != 3 {
+	if titles := broker.GetMovieTitlesByShows(shows); len(titles) != 3 {
 		t.Error("Received wrong number of titles, expected 3, got", len(titles))
 	} else {
 		for i, title := range titles {

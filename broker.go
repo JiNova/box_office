@@ -153,13 +153,13 @@ func (broker *DataBroker) DeleteTicketsBySerial(serials []string) {
 	}
 }
 
-func (broker *DataBroker) GetMovieTitlesByShows(shows *[]Show) (movies []string) {
-	movies = make([]string, len(*shows))
+func (broker *DataBroker) GetMovieTitlesByShows(shows []Show) (movieTitles []string) {
+	movieTitles = make([]string, len(shows))
 
-	for i, show := range *shows {
+	for i, show := range shows {
 		var m Movie
 		broker.dbhandler.QueryModel(&m, "movie_id = ?", show.MovieID)
-		movies[i] = m.Title
+		movieTitles[i] = m.Title
 	}
 
 	return
