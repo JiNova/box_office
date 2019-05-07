@@ -74,5 +74,21 @@ func (reporter *ReportHandler) GetTimeFromUser() *time.Time {
 }
 
 func (reporter *ReportHandler) GetSpecificShowFromUser(reportDate *time.Time) (show *Show, movieTitle string, err error) {
+	shows := reporter.broker.GetShowsByPlaytime(reportDate.Weekday().String(), reportDate.Hour())
+	movieTitles := reporter.broker.GetMovieTitlesByShows(shows)
+
+	for i, show := range shows {
+		output := fmt.Sprintf("(%v) %v on Screen %v", i+1, movieTitles[i], show.Screen)
+		fmt.Println(output)
+	}
+
+	choice, err := choose("which show")
+
+	if err != nil {
+		return
+	}
+
+	show = &(shows[choice-1])
+	movieTitle = movieTitles[choice-1]
 	return
 }
