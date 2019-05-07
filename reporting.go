@@ -18,7 +18,11 @@ func (reporter *ReportHandler) ProceedReporting() {
 	}
 
 	if choice == 1 {
-		day := reporter.GetDateFromUser()
+		day, err := reporter.GetDateFromUser()
+		if err != nil {
+			return
+		}
+
 		hour := reporter.GetTimeFromUser()
 		loc, _ := time.LoadLocation("America/Chicago")
 		reportDate := time.Date(day.Year(), day.Month(), day.Day(), hour.Hour(), 0, 0, 0, loc)
@@ -36,7 +40,11 @@ func (reporter *ReportHandler) ProceedReporting() {
 
 	} else if choice == 2 {
 
-		date := reporter.GetDateFromUser()
+		date, err := reporter.GetDateFromUser()
+		if err != nil {
+			return
+		}
+
 		output := fmt.Sprintf("On %v we sold %v tickets", date.Format("Jan 2, Mon"), reporter.broker.GetTicketCountByDay(date))
 		fmt.Println(output)
 
@@ -45,7 +53,7 @@ func (reporter *ReportHandler) ProceedReporting() {
 	}
 }
 
-func (reporter *ReportHandler) GetDateFromUser() *time.Time {
+func (reporter *ReportHandler) GetDateFromUser() (*time.Time, error) {
 	fmt.Println("Which date? (mm/dd/yyyy)")
 	input := readcmd("date")
 
@@ -53,10 +61,10 @@ func (reporter *ReportHandler) GetDateFromUser() *time.Time {
 
 	if err != nil {
 		fmt.Println("I did not understand that, sorry :(")
-		return nil
+		return nil, err
 	}
 
-	return &date
+	return &date, nil
 }
 
 func (reporter *ReportHandler) GetTimeFromUser() *time.Time {
