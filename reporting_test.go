@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-func TestReportHandler_GetDateTimeFromUser(t *testing.T) {
+func TestReportHandler_GetDateFromUser(t *testing.T) {
 	var broker DataBroker
 	broker.Init()
 
