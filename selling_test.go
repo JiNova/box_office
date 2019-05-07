@@ -6,15 +6,25 @@ import (
 	"time"
 )
 
-func TestSellHandler_PresentMovies(t *testing.T) {
+func sellingTestSetup(input string) (seller *SellHandler, tester *TestHandler) {
 	var broker DataBroker
 	broker.Init()
-	seller := SellHandler{&broker}
-	defer broker.Close()
+	seller = &SellHandler{&broker}
 
-	var tester TestHandler
-	tester.setUpMockInput("2")
-	defer tester.cleanUp()
+	tester = new(TestHandler)
+	tester.setUpMockInput(input)
+
+	return
+}
+
+func sellingTestCleanup(seller *SellHandler, tester *TestHandler) {
+	seller.broker.Close()
+	tester.cleanUp()
+}
+
+func TestSellHandler_PresentMovies(t *testing.T) {
+	seller, tester := sellingTestSetup("2")
+	defer sellingTestCleanup(seller, tester)
 
 	if choice, err := seller.PresentMovies(); err != nil {
 		t.Error("Error while choosing movie", err)
