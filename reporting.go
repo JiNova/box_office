@@ -100,7 +100,6 @@ func (reporter *ReportHandler) GetSpecificShowFromUser(reportDate *time.Time) (s
 	}
 
 	choice, err := chooseMenuOption("which show")
-
 	if err != nil {
 		return
 	}

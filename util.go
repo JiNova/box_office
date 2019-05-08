@@ -10,7 +10,6 @@ import (
 )
 
 func readcmd(prompt string) (text string) {
-
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Print(prompt + "> ")
 	text, err := reader.ReadString('\n')
@@ -23,9 +22,7 @@ func readcmd(prompt string) (text string) {
 }
 
 func chooseMenuOption(prompt string) (choice int, err error) {
-
 	choice, err = strconv.Atoi(readcmd(prompt))
-
 	if err != nil {
 		fmt.Println("Something went wrong")
 	}
@@ -46,7 +43,6 @@ func genPlaytimeFromShow(broker *DataBroker, show *Show, today *time.Time) *time
 }
 
 func pricing(broker *DataBroker, tier int, day *Day, time *Time) (price float64) {
-
 	var dis float64
 	price = broker.GetTierPrice(tier)
 
