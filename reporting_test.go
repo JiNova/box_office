@@ -6,18 +6,27 @@ import (
 	"time"
 )
 
-func TestReportHandler_GetDateFromUser(t *testing.T) {
+func reportingTestSetup(input string) (reporter *ReportHandler, tester *TestHandler) {
 	var broker DataBroker
 	broker.Init()
+	reporter = &ReportHandler{&broker}
 
-	reporter := ReportHandler{&broker}
-	oldStdin := os.Stdin
-	inputfile := emulateUserInput("04/27/2019")
+	tester = new(TestHandler)
+	tester.setUpMockInput(input)
+
+	return
+}
+
+func reportingTestCleanup(reporter *ReportHandler, tester *TestHandler) {
+	reporter.broker.Close()
+	tester.cleanUp()
+}
+
+func TestReportHandler_GetDateFromUser(t *testing.T) {
 	expectedDate := time.Date(2019, time.April, 27, 0, 0, 0, 0, time.UTC)
 
-	defer os.Remove(inputfile.Name())      // clean up
-	defer func() { os.Stdin = oldStdin }() // Restore stdin
-	defer broker.Close()
+	reporter, tester := reportingTestSetup("04/27/2019")
+	defer reportingTestCleanup(reporter, tester)
 
 	if date, err := reporter.GetDateFromUser(); err != nil {
 		t.Error("Error when parsing user date, got", err)
