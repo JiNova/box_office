@@ -36,17 +36,9 @@ func TestReportHandler_GetDateFromUser(t *testing.T) {
 }
 
 func TestReportHandler_GetTimeFromUser(t *testing.T) {
-	var broker DataBroker
-	broker.Init()
-
-	reporter := ReportHandler{&broker}
-	oldStdin := os.Stdin
-	inputfile := emulateUserInput("7 pm")
 	expectedTime, _ := time.Parse("3 pm", "7 pm")
-
-	defer os.Remove(inputfile.Name())      // clean up
-	defer func() { os.Stdin = oldStdin }() // Restore stdin
-	defer broker.Close()
+	reporter, tester := reportingTestSetup("7 pm")
+	defer reportingTestCleanup(reporter, tester)
 
 	if time, err := reporter.GetTimeFromUser(); err != nil {
 		t.Error("Error when parsing user time, got", err)
