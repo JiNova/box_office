@@ -1,7 +1,6 @@
 package main
 
 import (
-	"os"
 	"testing"
 	"time"
 )
@@ -47,18 +46,9 @@ func TestReportHandler_GetTimeFromUser(t *testing.T) {
 }
 
 func TestReportHandler_GetSpecificShowFromUser(t *testing.T) {
-	var broker DataBroker
-	broker.Init()
-
-	reporter := ReportHandler{&broker}
-	oldStdin := os.Stdin
-	inputfile := emulateUserInput("4")
-	loc, _ := time.LoadLocation("America/Chicago")
-	date := time.Date(2019, time.April, 28, 20, 0, 0, 0, loc)
-
-	defer os.Remove(inputfile.Name())      // clean up
-	defer func() { os.Stdin = oldStdin }() // Restore stdin
-	defer broker.Close()
+	date, _ := time.Parse("Jan 2 2006 3 pm", "Apr 28 2019 8 pm")
+	reporter, tester := reportingTestSetup("4")
+	defer reportingTestCleanup(reporter, tester)
 
 	if show, title, err := reporter.GetSpecificShowFromUser(&date); err != nil {
 		t.Error("Error while getting show from user, got", err)
