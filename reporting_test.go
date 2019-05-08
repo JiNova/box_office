@@ -23,8 +23,7 @@ func reportingTestCleanup(reporter *ReportHandler, tester *TestHandler) {
 }
 
 func TestReportHandler_GetDateFromUser(t *testing.T) {
-	expectedDate := time.Date(2019, time.April, 27, 0, 0, 0, 0, time.UTC)
-
+	expectedDate, _ := time.Parse("Jan 2 2006", "Apr 27 2019")
 	reporter, tester := reportingTestSetup("04/27/2019")
 	defer reportingTestCleanup(reporter, tester)
 
